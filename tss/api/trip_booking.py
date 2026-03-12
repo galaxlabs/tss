@@ -27,7 +27,6 @@ def _trip_booking_fields():
         "booking_source",
         "reference_no",
         "base_company",
-        "branch",
         "booking_date",
         "customer_name",
         "customer_name_ar",
@@ -62,7 +61,6 @@ def list_trip_bookings(
     limit_page_length=20,
     search=None,
     base_company=None,
-    branch=None,
     status=None,
     booking_source=None,
     trip_date=None,
@@ -75,8 +73,6 @@ def list_trip_bookings(
     filters = {}
     if base_company:
         filters["base_company"] = base_company
-    if branch:
-        filters["branch"] = branch
     if status:
         filters["status"] = status
     if booking_source:
@@ -112,7 +108,6 @@ def list_trip_bookings(
             "booking_code",
             "booking_title",
             "base_company",
-            "branch",
             "status",
             "booking_source",
             "customer_name",

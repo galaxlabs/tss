@@ -375,7 +375,6 @@ class Trip(Document):
             "created_from_booking": self.created_from_booking,
             "trip_booking": self.trip_booking,
             "base_company": self.base_company,
-            "branch": self.branch,
             "uuid": self.uuid,
             "hijri_date": self.hijri_date,
             "customer": self.customer,

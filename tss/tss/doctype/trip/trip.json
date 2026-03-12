@@ -68,12 +68,6 @@
       "in_list_view": 1
     },
     {
-      "fieldname": "branch",
-      "fieldtype": "Link",
-      "label": "Branch",
-      "options": "Branch"
-    },
-    {
       "fieldname": "uuid",
       "fieldtype": "Data",
       "label": "UUID",

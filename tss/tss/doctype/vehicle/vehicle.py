@@ -171,7 +171,6 @@ class Vehicle(Document):
             "chassis_no": self.chassis_no,
             "engine_no": self.engine_no,
             "base_company": self.base_company,
-            "branch": self.branch,
             "assigned_driver": self.assigned_driver,
             "ownership_type": self.ownership_type,
             "status": self.status,

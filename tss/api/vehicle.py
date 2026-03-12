@@ -33,7 +33,6 @@ def _vehicle_fields():
         "chassis_no",
         "engine_no",
         "base_company",
-        "branch",
         "assigned_driver",
         "ownership_type",
         "status",
@@ -62,7 +61,6 @@ def list_vehicles(
     limit_page_length=20,
     search=None,
     base_company=None,
-    branch=None,
     vehicle_type=None,
     vehicle_make=None,
     vehicle_model=None,
@@ -75,8 +73,6 @@ def list_vehicles(
     filters = {}
     if base_company:
         filters["base_company"] = base_company
-    if branch:
-        filters["branch"] = branch
     if vehicle_type:
         filters["vehicle_type"] = vehicle_type
     if vehicle_make:
@@ -115,7 +111,6 @@ def list_vehicles(
             "vehicle_model",
             "license_plate",
             "base_company",
-            "branch",
             "assigned_driver",
             "status",
             "is_active",
