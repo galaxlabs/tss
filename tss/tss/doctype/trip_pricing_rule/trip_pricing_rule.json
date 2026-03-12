@@ -1,0 +1,299 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-12 22:56:11.246909",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "title_field": "rule_title",
+ "search_fields": "rule_code,rule_title,route,vehicle_type,trip_type,base_company",
+ "autoname": "field:rule_code", 
+ "field_order": [
+  "section_identity",
+  "rule_code",
+  "rule_title",
+  "status",
+  "priority",
+  "column_break_identity_1",
+  "base_company",
+  "is_active",
+  "is_default",
+  "section_scope",
+  "trip_type",
+  "route",
+  "vehicle_type",
+  "column_break_scope_1",
+  "customer_type",
+  "booking_source",
+  "currency",
+  "section_amounts",
+  "pricing_method",
+  "base_amount",
+  "minimum_amount",
+  "maximum_amount",
+  "column_break_amounts_1",
+  "per_km_rate",
+  "per_hour_rate",
+  "per_day_rate",
+  "per_passenger_rate",
+  "section_dynamic_flags",
+  "allow_peak_hour",
+  "allow_demand_supply",
+  "allow_manual_override",
+  "round_to_nearest",
+  "column_break_dynamic_flags_1",
+  "effective_from",
+  "effective_to",
+  "section_notes",
+  "description",
+  "description_ar",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_identity",
+   "fieldtype": "Section Break",
+   "label": "Identity"
+  },
+  {
+   "fieldname": "rule_code",
+   "fieldtype": "Data",
+   "label": "Rule Code",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rule_title",
+   "fieldtype": "Data",
+   "label": "Rule Title",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nActive\nInactive",
+   "default": "Draft",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Int",
+   "label": "Priority",
+   "default": "100",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_identity_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_company",
+   "fieldtype": "Link",
+   "label": "Base Company",
+   "options": "Base Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "default": "1"
+  },
+  {
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Is Default"
+  },
+
+  {
+   "fieldname": "section_scope",
+   "fieldtype": "Section Break",
+   "label": "Scope"
+  },
+  {
+   "fieldname": "trip_type",
+   "fieldtype": "Select",
+   "label": "Trip Type",
+   "options": "\nOne Way\nReturn\nHourly\nDaily\nCustom Route"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "label": "Route",
+   "options": "Route"
+  },
+  {
+   "fieldname": "vehicle_type",
+   "fieldtype": "Link",
+   "label": "Vehicle Type",
+   "options": "Vehicle Type"
+  },
+  {
+   "fieldname": "column_break_scope_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "\nRetail\nCorporate\nVIP\nAgent"
+  },
+  {
+   "fieldname": "booking_source",
+   "fieldtype": "Select",
+   "label": "Booking Source",
+   "options": "\nDesk\nWebsite\nAPI\nTelegram\nWhatsApp\nCall Center"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+
+  {
+   "fieldname": "section_amounts",
+   "fieldtype": "Section Break",
+   "label": "Amounts"
+  },
+  {
+   "fieldname": "pricing_method",
+   "fieldtype": "Select",
+   "label": "Pricing Method",
+   "options": "\nFixed\nDistance\nHourly\nDaily\nPer Passenger\nMixed",
+   "default": "Fixed"
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "label": "Base Amount"
+  },
+  {
+   "fieldname": "minimum_amount",
+   "fieldtype": "Currency",
+   "label": "Minimum Amount"
+  },
+  {
+   "fieldname": "maximum_amount",
+   "fieldtype": "Currency",
+   "label": "Maximum Amount"
+  },
+  {
+   "fieldname": "column_break_amounts_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "per_km_rate",
+   "fieldtype": "Currency",
+   "label": "Per KM Rate"
+  },
+  {
+   "fieldname": "per_hour_rate",
+   "fieldtype": "Currency",
+   "label": "Per Hour Rate"
+  },
+  {
+   "fieldname": "per_day_rate",
+   "fieldtype": "Currency",
+   "label": "Per Day Rate"
+  },
+  {
+   "fieldname": "per_passenger_rate",
+   "fieldtype": "Currency",
+   "label": "Per Passenger Rate"
+  },
+
+  {
+   "fieldname": "section_dynamic_flags",
+   "fieldtype": "Section Break",
+   "label": "Dynamic Flags"
+  },
+  {
+   "fieldname": "allow_peak_hour",
+   "fieldtype": "Check",
+   "label": "Allow Peak Hour",
+   "default": "1"
+  },
+  {
+   "fieldname": "allow_demand_supply",
+   "fieldtype": "Check",
+   "label": "Allow Demand Supply",
+   "default": "1"
+  },
+  {
+   "fieldname": "allow_manual_override",
+   "fieldtype": "Check",
+   "label": "Allow Manual Override",
+   "default": "1"
+  },
+  {
+   "fieldname": "round_to_nearest",
+   "fieldtype": "Float",
+   "label": "Round To Nearest"
+  },
+  {
+   "fieldname": "column_break_dynamic_flags_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Date",
+   "label": "Effective From"
+  },
+  {
+   "fieldname": "effective_to",
+   "fieldtype": "Date",
+   "label": "Effective To"
+  },
+
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description_ar",
+   "fieldtype": "Small Text",
+   "label": "Description (Arabic)"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 22:56:11.246909",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "Trip Pricing Rule",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

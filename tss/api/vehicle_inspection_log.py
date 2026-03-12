@@ -1,0 +1,167 @@
+from __future__ import annotations
+
+import frappe
+from frappe import _
+from frappe.utils import cint
+
+
+def _require_auth():
+    if frappe.session.user == "Guest":
+        frappe.throw(_("Authentication required."), frappe.PermissionError)
+
+
+def _check_permission(doc, ptype="read"):
+    if not doc.has_permission(ptype):
+        frappe.throw(_("Not permitted."), frappe.PermissionError)
+
+
+def _parse_payload(payload=None):
+    if payload:
+        return frappe.parse_json(payload)
+    return frappe.local.form_dict
+
+
+def _fields():
+    return [
+        "naming_series",
+        "base_company",
+        "inspection_date",
+        "driver",
+        "driver_name_text",
+        "vehicle",
+        "vehicle_type",
+        "supervisor",
+        "supervisor_name_text",
+        "trip",
+        "odometer_reading",
+        "previous_revision",
+        "revision_reason",
+        "overall_notes",
+        "declaration",
+        "driver_signature",
+        "supervisor_signature",
+        "auto_fill_checklist",
+    ]
+
+
+@frappe.whitelist(methods=["GET"])
+def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=None, base_company=None, vehicle=None, driver=None, inspection_date=None, is_latest_revision=None):
+    _require_auth()
+
+    filters = {}
+    if base_company:
+        filters["base_company"] = base_company
+    if vehicle:
+        filters["vehicle"] = vehicle
+    if driver:
+        filters["driver"] = driver
+    if inspection_date:
+        filters["inspection_date"] = inspection_date
+    if is_latest_revision not in (None, ""):
+        filters["is_latest_revision"] = cint(is_latest_revision)
+
+    or_filters = None
+    if search:
+        or_filters = [
+            ["Vehicle Inspection Log", "name", "like", f"%{search}%"],
+            ["Vehicle Inspection Log", "inspection_log_no", "like", f"%{search}%"],
+            ["Vehicle Inspection Log", "vehicle", "like", f"%{search}%"],
+            ["Vehicle Inspection Log", "driver", "like", f"%{search}%"],
+        ]
+
+    data = frappe.get_list(
+        "Vehicle Inspection Log",
+        filters=filters,
+        or_filters=or_filters,
+        fields=[
+            "name",
+            "inspection_log_no",
+            "revision_no",
+            "base_company",
+            "inspection_date",
+            "vehicle",
+            "driver",
+            "overall_result",
+            "is_latest_revision",
+        ],
+        order_by="inspection_date desc, revision_no desc",
+        limit_start=cint(limit_start),
+        limit_page_length=cint(limit_page_length),
+    )
+    return {"data": data}
+
+
+@frappe.whitelist(methods=["GET"])
+def get_vehicle_inspection_log(name):
+    _require_auth()
+    doc = frappe.get_doc("Vehicle Inspection Log", name)
+    _check_permission(doc, "read")
+    return {"data": doc.as_api_dict()}
+
+
+@frappe.whitelist(methods=["POST"])
+def create_vehicle_inspection_log(payload=None):
+    _require_auth()
+    data = _parse_payload(payload)
+
+    doc_data = {
+        "doctype": "Vehicle Inspection Log",
+        "items": data.get("items") or [],
+    }
+
+    for fieldname in _fields():
+        doc_data[fieldname] = data.get(fieldname)
+
+    doc = frappe.get_doc(doc_data)
+    doc.insert()
+    return {"message": "Vehicle Inspection Log created successfully.", "data": doc.as_api_dict()}
+
+
+@frappe.whitelist(methods=["PUT", "POST"])
+def update_vehicle_inspection_log(name, payload=None):
+    _require_auth()
+    data = _parse_payload(payload)
+    doc = frappe.get_doc("Vehicle Inspection Log", name)
+    _check_permission(doc, "write")
+
+    for fieldname in _fields():
+        if fieldname in data:
+            doc.set(fieldname, data.get(fieldname))
+
+    if "items" in data:
+        doc.set("items", [])
+        for row in data.get("items") or []:
+            doc.append("items", row)
+
+    doc.save()
+    return {"message": "Vehicle Inspection Log updated successfully.", "data": doc.as_api_dict()}
+
+
+@frappe.whitelist(methods=["POST"])
+def create_vehicle_inspection_log_revision(source_name, payload=None):
+    _require_auth()
+    source = frappe.get_doc("Vehicle Inspection Log", source_name)
+    _check_permission(source, "read")
+
+    data = _parse_payload(payload)
+    new_doc = source.make_revision()
+
+    if data.get("revision_reason"):
+        new_doc.revision_reason = data.get("revision_reason")
+
+    if data.get("items"):
+        new_doc.set("items", [])
+        for row in data.get("items"):
+            new_doc.append("items", row)
+
+    new_doc.insert()
+    return {"message": "Vehicle Inspection Log revision created successfully.", "data": new_doc.as_api_dict()}
+
+
+@frappe.whitelist(methods=["DELETE", "POST"])
+def delete_vehicle_inspection_log(name):
+    _require_auth()
+    doc = frappe.get_doc("Vehicle Inspection Log", name)
+    _check_permission(doc, "delete")
+    frappe.delete_doc("Vehicle Inspection Log", name)
+    return {"message": "Vehicle Inspection Log deleted successfully."}

@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-12 23:49:47.423914",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+"title_field": "item_name",
+ "track_changes": 1,
+ "autoname": "field:item_code",
+ "field_order": [
+  "section_identity",
+  "item_code",
+  "item_name",
+  "item_name_ar",
+  "column_break_identity_1",
+  "section_name",
+  "sort_order",
+  "is_active",
+  "section_notes",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_identity",
+   "fieldtype": "Section Break",
+   "label": "Identity"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_name_ar",
+   "fieldtype": "Data",
+   "label": "Item Name (Arabic)"
+  },
+  {
+   "fieldname": "column_break_identity_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_name",
+   "fieldtype": "Select",
+   "label": "Section",
+   "options": "Dashboard Indicators\nExternal Inspection\nSafety And Security Tools",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order",
+   "default": "0"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "default": "1"
+  },
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 23:49:47.423914",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "Vehicle Inspection Checklist Item",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
