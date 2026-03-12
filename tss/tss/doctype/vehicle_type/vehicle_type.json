@@ -4,15 +4,216 @@
  "creation": "2026-03-12 20:29:31.117645",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": [
-  "section_break_isef"
- ],
- "fields": [
-  {
-   "fieldname": "section_break_isef",
-   "fieldtype": "Section Break"
-  }
- ],
+  "track_changes": 1,
+  "title_field": "type_name",
+  "search_fields": "type_name,type_name_ar,type_code,category,default_service_unit",
+  "fields": [
+    {
+      "fieldname": "section_identity",
+      "fieldtype": "Section Break",
+      "label": "Identity"
+    },
+    {
+      "fieldname": "type_name",
+      "fieldtype": "Data",
+      "label": "Vehicle Type Name",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "type_name_ar",
+      "fieldtype": "Data",
+      "label": "Vehicle Type Name (Arabic)"
+    },
+    {
+      "fieldname": "type_code",
+      "fieldtype": "Data",
+      "label": "Vehicle Type Code",
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_identity_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "category",
+      "fieldtype": "Select",
+      "label": "Category",
+      "options": "\nPassenger\nCargo\nService\nSpecial Purpose",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "\nDraft\nActive\nInactive",
+      "default": "Draft",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active",
+      "default": "1"
+    },
+
+    {
+      "fieldname": "section_capacity",
+      "fieldtype": "Section Break",
+      "label": "Capacity and Service Rules"
+    },
+    {
+      "fieldname": "passenger_capacity",
+      "fieldtype": "Int",
+      "label": "Passenger Capacity"
+    },
+    {
+      "fieldname": "luggage_capacity",
+      "fieldtype": "Float",
+      "label": "Luggage Capacity"
+    },
+    {
+      "fieldname": "luggage_capacity_unit",
+      "fieldtype": "Select",
+      "label": "Luggage Capacity Unit",
+      "options": "\nBags\nkg\nTon\nm3"
+    },
+    {
+      "fieldname": "seat_configuration",
+      "fieldtype": "Data",
+      "label": "Seat Configuration"
+    },
+    {
+      "fieldname": "column_break_capacity_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "default_service_unit",
+      "fieldtype": "Select",
+      "label": "Default Service Unit",
+      "options": "\nTrip\nHour\nDay\nKM\nRoute",
+      "default": "Trip"
+    },
+    {
+      "fieldname": "minimum_booking_hours",
+      "fieldtype": "Float",
+      "label": "Minimum Booking Hours"
+    },
+    {
+      "fieldname": "minimum_distance_km",
+      "fieldtype": "Float",
+      "label": "Minimum Distance (KM)"
+    },
+
+    {
+      "fieldname": "section_pricing_flags",
+      "fieldtype": "Section Break",
+      "label": "Pricing Flags"
+    },
+    {
+      "fieldname": "allow_route_pricing",
+      "fieldtype": "Check",
+      "label": "Allow Route Pricing",
+      "default": "1"
+    },
+    {
+      "fieldname": "allow_distance_pricing",
+      "fieldtype": "Check",
+      "label": "Allow Distance Pricing",
+      "default": "1"
+    },
+    {
+      "fieldname": "allow_hourly_pricing",
+      "fieldtype": "Check",
+      "label": "Allow Hourly Pricing",
+      "default": "1"
+    },
+    {
+      "fieldname": "allow_daily_pricing",
+      "fieldtype": "Check",
+      "label": "Allow Daily Pricing"
+    },
+    {
+      "fieldname": "allow_dynamic_pricing",
+      "fieldtype": "Check",
+      "label": "Allow Dynamic Pricing",
+      "default": "1"
+    },
+    {
+      "fieldname": "column_break_pricing_flags_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "base_fare",
+      "fieldtype": "Currency",
+      "label": "Base Fare"
+    },
+    {
+      "fieldname": "base_currency",
+      "fieldtype": "Link",
+      "label": "Base Currency",
+      "options": "Currency"
+    },
+    {
+      "fieldname": "sort_order",
+      "fieldtype": "Int",
+      "label": "Sort Order"
+    },
+
+    {
+      "fieldname": "section_features",
+      "fieldtype": "Section Break",
+      "label": "Features and Display"
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Small Text",
+      "label": "Description"
+    },
+    {
+      "fieldname": "description_ar",
+      "fieldtype": "Small Text",
+      "label": "Description (Arabic)"
+    },
+    {
+      "fieldname": "icon",
+      "fieldtype": "Attach Image",
+      "label": "Icon"
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Image"
+    },
+    {
+      "fieldname": "column_break_features_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "website_label",
+      "fieldtype": "Data",
+      "label": "Website Label"
+    },
+    {
+      "fieldname": "website_label_ar",
+      "fieldtype": "Data",
+      "label": "Website Label (Arabic)"
+    },
+    {
+      "fieldname": "show_on_website",
+      "fieldtype": "Check",
+      "label": "Show on Website",
+      "default": "1"
+    },
+    {
+      "fieldname": "remarks",
+      "fieldtype": "Small Text",
+      "label": "Remarks"
+    }
+  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
