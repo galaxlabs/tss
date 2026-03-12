@@ -1,6 +1,3 @@
-# Copyright (c) 2026, Galaxy Labs and contributors
-# For license information, please see license.txt
-
 from __future__ import annotations
 
 import io
@@ -150,9 +147,6 @@ class Trip(Document):
 
             if self.vehicle_type and vehicle_doc.vehicle_type != self.vehicle_type:
                 frappe.throw(_("Assigned Vehicle does not belong to selected Vehicle Type."))
-
-            if self.assigned_driver and vehicle_doc.assigned_driver and vehicle_doc.assigned_driver != self.assigned_driver:
-                pass
 
     def pull_route_defaults(self):
         if not self.route or not frappe.db.exists("Route", self.route):
@@ -340,7 +334,7 @@ class Trip(Document):
             return 0
 
         booking = frappe.get_doc("Trip Booking", self.trip_booking)
-        booking_rows = booking.get("booking_passenger") if hasattr(booking, "booking_passenger") else None
+        booking_rows = booking.get("booking_passenger") or []
 
         if not booking_rows:
             return 0
@@ -351,7 +345,7 @@ class Trip(Document):
                 "passengers",
                 {
                     "passenger_name": row.passenger_name,
-                    "passenger_name_ar": getattr(row, "passenger_name_ar", None),
+                    "passenger_name_ar": row.passenger_name_ar,
                     "nationality": row.nationality,
                     "passenger_master": row.passenger_master,
                     "document_type": row.document_type,
@@ -359,8 +353,8 @@ class Trip(Document):
                     "contact_no": row.contact_no,
                     "source": row.source or "BOOKING",
                     "expiry_date": row.expiry_date,
-                    "seat_no": getattr(row, "seat_no", None),
-                    "notes": getattr(row, "notes", None),
+                    "seat_no": row.seat_no,
+                    "notes": row.notes,
                     "is_auto_filled": 1,
                 },
             )
