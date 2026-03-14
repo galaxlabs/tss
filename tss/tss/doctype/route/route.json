@@ -1,223 +1,134 @@
 {
  "actions": [],
-  "allow_rename": 1,
-  "autoname": "field:route_code",
-  "creation": "2026-03-12 00:00:00.000000",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "track_changes": 1,
-  "title_field": "route_title",
-  "search_fields": "route_code,route_title,from_city,to_city,from_place_full,to_place_full",
-  "fields": [
-    {
-      "fieldname": "section_identity",
-      "fieldtype": "Section Break",
-      "label": "Identity"
-    },
-    {
-      "fieldname": "route_code",
-      "fieldtype": "Data",
-      "label": "Route Code",
-      "unique": 1,
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "route_title",
-      "fieldtype": "Data",
-      "label": "Route Title",
-      "read_only": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "\nDraft\nActive\nInactive",
-      "default": "Draft",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_identity_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "base_company",
-      "fieldtype": "Link",
-      "label": "Base Company",
-      "options": "Base Company"
-    },
-    {
-      "fieldname": "is_active",
-      "fieldtype": "Check",
-      "label": "Is Active",
-      "default": "1"
-    },
-    {
-      "fieldname": "is_system_generated",
-      "fieldtype": "Check",
-      "label": "Is System Generated"
-    },
-
-    {
-      "fieldname": "section_route_points",
-      "fieldtype": "Section Break",
-      "label": "Route Points"
-    },
-    {
-      "fieldname": "from_city",
-      "fieldtype": "Data",
-      "label": "From City",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "from_city_code",
-      "fieldtype": "Data",
-      "label": "From City Code",
-      "read_only": 1
-    },
-    {
-      "fieldname": "from_place_full",
-      "fieldtype": "Small Text",
-      "label": "From Place Name"
-    },
-    {
-      "fieldname": "column_break_route_points_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "to_city",
-      "fieldtype": "Data",
-      "label": "To City",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "to_city_code",
-      "fieldtype": "Data",
-      "label": "To City Code",
-      "read_only": 1
-    },
-    {
-      "fieldname": "to_place_full",
-      "fieldtype": "Small Text",
-      "label": "To Place Name"
-    },
-
-    {
-      "fieldname": "section_route_metrics",
-      "fieldtype": "Section Break",
-      "label": "Route Metrics"
-    },
-    {
-      "fieldname": "distance",
-      "fieldtype": "Float",
-      "label": "Distance"
-    },
-    {
-      "fieldname": "distance_unit",
-      "fieldtype": "Select",
-      "label": "Distance Unit",
-      "options": "\nKM\nMiles",
-      "default": "KM"
-    },
-    {
-      "fieldname": "duration_minutes",
-      "fieldtype": "Int",
-      "label": "Duration Minutes"
-    },
-    {
-      "fieldname": "duration_text",
-      "fieldtype": "Data",
-      "label": "Duration Text",
-      "read_only": 1
-    },
-    {
-      "fieldname": "column_break_route_metrics_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "avg_speed_kmph",
-      "fieldtype": "Float",
-      "label": "Avg Speed (KM/H)",
-      "default": "100"
-    },
-    {
-      "fieldname": "distance_source",
-      "fieldtype": "Select",
-      "label": "Distance Source",
-      "options": "\nManual\nGoogle Maps"
-    },
-    {
-      "fieldname": "google_maps_last_sync_on",
-      "fieldtype": "Datetime",
-      "label": "Google Maps Last Sync On",
-      "read_only": 1
-    },
-
-    {
-      "fieldname": "section_return",
-      "fieldtype": "Section Break",
-      "label": "Return Route"
-    },
-    {
-      "fieldname": "has_return",
-      "fieldtype": "Check",
-      "label": "Has Return",
-      "default": "0"
-    },
-    {
-      "fieldname": "return_route",
-      "fieldtype": "Link",
-      "label": "Return Route",
-      "options": "Route"
-    },
-    {
-      "fieldname": "column_break_return_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "allow_dynamic_pricing",
-      "fieldtype": "Check",
-      "label": "Allow Dynamic Pricing",
-      "default": "1"
-    },
-    {
-      "fieldname": "show_on_website",
-      "fieldtype": "Check",
-      "label": "Show on Website",
-      "default": "1"
-    },
-
-    {
-      "fieldname": "section_notes",
-      "fieldtype": "Section Break",
-      "label": "Notes"
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Small Text",
-      "label": "Description"
-    },
-    {
-      "fieldname": "description_ar",
-      "fieldtype": "Small Text",
-      "label": "Description (Arabic)"
-    },
-    {
-      "fieldname": "remarks",
-      "fieldtype": "Small Text",
-      "label": "Remarks"
-    }
-  ],
+ "allow_rename": 1,
+ "autoname": "field:route_code",
+ "creation": "2026-03-14 20:02:04.258214",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "route_title",
+  "route_name",
+  "route_name_ar",
+  "source",
+  "route_type",
+  "is_active",
+  "estimated_duration_minutes",
+  "default_vehicle_type",
+  "column_break_zxqf",
+  "route_code",
+  "destination",
+  "status",
+  "distance_km",
+  "notes",
+  "section_break_kkks",
+  "route_stops"
+ ],
+ "fields": [
+  {
+   "fieldname": "route_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "route_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route Name"
+  },
+  {
+   "fieldname": "route_name_ar",
+   "fieldtype": "Data",
+   "label": "Route Name Arabic"
+  },
+  {
+   "fieldname": "route_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route Code",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Source",
+   "reqd": 1
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Destination",
+   "reqd": 1
+  },
+  {
+   "fieldname": "route_type",
+   "fieldtype": "Select",
+   "label": "Route Type",
+   "options": "Intercity\nIntracity\nAirport\nShuttle\nStaff Transport\nCustom"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nActive\nInactive"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "read_only": 1
+  },
+  {
+   "fieldname": "distance_km",
+   "fieldtype": "Float",
+   "label": "Distance KM"
+  },
+  {
+   "fieldname": "estimated_duration_minutes",
+   "fieldtype": "Int",
+   "label": "Estimated Duration Minutes"
+  },
+  {
+   "fieldname": "default_vehicle_type",
+   "fieldtype": "Link",
+   "label": "Default Vehicle Type",
+   "options": "Vehicle Type"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "route_stops",
+   "fieldtype": "Table",
+   "label": "Route Stops",
+   "options": "Route Stop"
+  },
+  {
+   "fieldname": "column_break_zxqf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_kkks",
+   "fieldtype": "Section Break"
+  }
+ ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 21:46:18.616744",
+ "modified": "2026-03-14 23:59:00.000000",
  "modified_by": "Administrator",
  "module": "TSS",
  "name": "Route",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -235,7 +146,11 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "route_title,route_name,route_code,source,destination",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "route_title",
+ "track_changes": 1
 }

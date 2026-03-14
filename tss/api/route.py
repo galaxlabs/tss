@@ -21,31 +21,25 @@ def _parse_payload(payload=None):
     return frappe.local.form_dict
 
 
+def _as_api_dict(doc):
+    return doc.as_api_dict() if hasattr(doc, "as_api_dict") else doc.as_dict()
+
+
 def _route_fields():
     return [
+        "base_company",
+        "route_name",
+        "route_name_ar",
         "route_code",
+        "source",
+        "destination",
+        "route_type",
+        "distance_km",
+        "estimated_duration_minutes",
+        "default_vehicle_type",
         "status",
         "is_active",
-        "base_company",
-        "is_system_generated",
-        "from_city",
-        "from_city_code",
-        "from_place_full",
-        "to_city",
-        "to_city_code",
-        "to_place_full",
-        "distance",
-        "distance_unit",
-        "duration_minutes",
-        "avg_speed_kmph",
-        "distance_source",
-        "has_return",
-        "return_route",
-        "allow_dynamic_pricing",
-        "show_on_website",
-        "description",
-        "description_ar",
-        "remarks",
+        "notes",
     ]
 
 
@@ -55,38 +49,36 @@ def list_routes(
     limit_page_length=20,
     search=None,
     base_company=None,
-    from_city=None,
-    to_city=None,
+    source=None,
+    destination=None,
+    route_type=None,
     status=None,
     is_active=None,
-    show_on_website=None,
 ):
     _require_auth()
 
     filters = {}
     if base_company:
         filters["base_company"] = base_company
-    if from_city:
-        filters["from_city"] = from_city
-    if to_city:
-        filters["to_city"] = to_city
+    if source:
+        filters["source"] = source
+    if destination:
+        filters["destination"] = destination
+    if route_type:
+        filters["route_type"] = route_type
     if status:
         filters["status"] = status
     if is_active not in (None, ""):
         filters["is_active"] = cint(is_active)
-    if show_on_website not in (None, ""):
-        filters["show_on_website"] = cint(show_on_website)
 
     or_filters = None
     if search:
         or_filters = [
             ["Route", "name", "like", f"%{search}%"],
             ["Route", "route_code", "like", f"%{search}%"],
-            ["Route", "route_title", "like", f"%{search}%"],
-            ["Route", "from_city", "like", f"%{search}%"],
-            ["Route", "to_city", "like", f"%{search}%"],
-            ["Route", "from_place_full", "like", f"%{search}%"],
-            ["Route", "to_place_full", "like", f"%{search}%"],
+            ["Route", "route_name", "like", f"%{search}%"],
+            ["Route", "source", "like", f"%{search}%"],
+            ["Route", "destination", "like", f"%{search}%"],
         ]
 
     data = frappe.get_list(
@@ -96,17 +88,15 @@ def list_routes(
         fields=[
             "name",
             "route_code",
-            "route_title",
+            "route_name",
             "base_company",
-            "from_city",
-            "to_city",
-            "distance",
-            "duration_minutes",
+            "source",
+            "destination",
+            "route_type",
+            "distance_km",
+            "estimated_duration_minutes",
             "status",
             "is_active",
-            "has_return",
-            "return_route",
-            "show_on_website",
         ],
         order_by="modified desc",
         limit_start=cint(limit_start),
@@ -122,7 +112,7 @@ def get_route(name):
 
     doc = frappe.get_doc("Route", name)
     _check_permission(doc, "read")
-    return {"data": doc.as_api_dict()}
+    return {"data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -130,7 +120,7 @@ def create_route(payload=None):
     _require_auth()
 
     data = _parse_payload(payload)
-    doc_data = {"doctype": "Route"}
+    doc_data = {"doctype": "Route", "route_stops": data.get("route_stops") or []}
 
     for fieldname in _route_fields():
         doc_data[fieldname] = data.get(fieldname)
@@ -138,10 +128,7 @@ def create_route(payload=None):
     doc = frappe.get_doc(doc_data)
     doc.insert()
 
-    return {
-        "message": "Route created successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Route created successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["PUT", "POST"])
@@ -156,12 +143,13 @@ def update_route(name, payload=None):
         if fieldname in data:
             doc.set(fieldname, data.get(fieldname))
 
-    doc.save()
+    if "route_stops" in data:
+        doc.set("route_stops", [])
+        for row in data.get("route_stops") or []:
+            doc.append("route_stops", row)
 
-    return {
-        "message": "Route updated successfully.",
-        "data": doc.as_api_dict(),
-    }
+    doc.save()
+    return {"message": "Route updated successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
@@ -170,51 +158,16 @@ def delete_route(name):
 
     doc = frappe.get_doc("Route", name)
     _check_permission(doc, "delete")
-
     frappe.delete_doc("Route", name)
-
     return {"message": "Route deleted successfully."}
 
 
 @frappe.whitelist(methods=["POST"])
-def activate_route(name):
+def set_route_status(name, status):
     _require_auth()
 
     doc = frappe.get_doc("Route", name)
     _check_permission(doc, "write")
-    doc.activate()
-
-    return {
-        "message": "Route activated successfully.",
-        "data": doc.as_api_dict(),
-    }
-
-
-@frappe.whitelist(methods=["POST"])
-def deactivate_route(name):
-    _require_auth()
-
-    doc = frappe.get_doc("Route", name)
-    _check_permission(doc, "write")
-    doc.deactivate()
-
-    return {
-        "message": "Route deactivated successfully.",
-        "data": doc.as_api_dict(),
-    }
-
-
-@frappe.whitelist(methods=["POST"])
-def fetch_route_distance(name):
-    _require_auth()
-
-    doc = frappe.get_doc("Route", name)
-    _check_permission(doc, "write")
-
-    result = doc.fetch_distance_and_update()
-
-    return {
-        "message": "Route distance updated successfully.",
-        "result": result,
-        "data": doc.as_api_dict(),
-    }
+    doc.status = status
+    doc.save()
+    return {"message": "Route status updated successfully.", "data": _as_api_dict(doc)}

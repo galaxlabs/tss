@@ -1,0 +1,22 @@
+{
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "staff",
+  "role_type",
+  "is_primary",
+  "notes"
+ ],
+ "fields": [
+  {"fieldname": "staff", "fieldtype": "Link", "label": "Staff", "options": "Staff", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "role_type", "fieldtype": "Select", "label": "Role Type", "options": "Driver\nConductor\nAssistant\nSupervisor\nOther", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "is_primary", "fieldtype": "Check", "label": "Is Primary", "default": "0"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ],
+ "istable": 1,
+ "links": [],
+ "module": "TSS",
+ "name": "Trip Staff Assignment",
+ "permissions": []
+}

@@ -8,7 +8,7 @@ app_license = "mit"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["gbase"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -82,8 +82,7 @@ app_license = "mit"
 # Installation
 # ------------
 
-# before_install = "tss.install.before_install"
-# after_install = "tss.install.after_install"
+after_install = "tss.setup.install.after_install"
 
 # Uninstallation
 # ------------
@@ -137,13 +136,11 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Trip": {
+		"on_update": "tss.utils.pdf_hooks.create_trip_pdf",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -169,7 +166,7 @@ app_license = "mit"
 # Testing
 # -------
 
-# before_tests = "tss.install.before_tests"
+before_tests = "tss.setup.install.after_migrate"
 
 # Overriding Methods
 # ------------------------------
@@ -181,9 +178,14 @@ app_license = "mit"
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-# 	"Task": "tss.task.get_dashboard_data"
-# }
+override_doctype_dashboards = {
+	"Vehicle": "tss.tss.doctype.vehicle.vehicle_dashboard.get_data",
+	"Route": "tss.tss.doctype.route.route_dashboard.get_data",
+	"Trip": "tss.tss.doctype.trip.trip_dashboard.get_data",
+	"Trip Booking": "tss.tss.doctype.trip_booking.trip_booking_dashboard.get_data",
+	"Trip Pricing Rule": "tss.tss.doctype.trip_pricing_rule.trip_pricing_rule_dashboard.get_data",
+	"Vehicle Inspection Log": "tss.tss.doctype.vehicle_inspection_log.vehicle_inspection_log_dashboard.get_data",
+}
 
 # exempt linked doctypes from being automatically cancelled
 #
@@ -247,3 +249,8 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+fixtures = [
+	{"dt": "Print Format", "filters": [["module", "=", "TSS"]]},
+]
+
+after_migrate = "tss.setup.install.after_migrate"

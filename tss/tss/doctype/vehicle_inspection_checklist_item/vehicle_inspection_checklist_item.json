@@ -4,9 +4,9 @@
  "creation": "2026-03-12 23:49:47.423914",
  "doctype": "DocType",
  "engine": "InnoDB",
-"title_field": "item_name",
+ "title_field": "check_item",
  "track_changes": 1,
- "autoname": "field:item_code",
+ "autoname": "field:check_item",
  "field_order": [
   "section_identity",
   "item_code",
@@ -17,7 +17,13 @@
   "sort_order",
   "is_active",
   "section_notes",
-  "description"
+  "description",
+  "check_item",
+  "check_item_ar",
+  "vehicle_type",
+  "sequence_no",
+  "is_mandatory",
+  "active"
  ],
  "fields": [
   {
@@ -78,6 +84,42 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "check_item",
+   "label": "Check Item",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "check_item_ar",
+   "label": "Check Item Arabic",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "vehicle_type",
+   "label": "Vehicle Type",
+   "fieldtype": "Link",
+   "options": "Vehicle Type"
+  },
+  {
+   "fieldname": "sequence_no",
+   "label": "Sequence No",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "is_mandatory",
+   "label": "Is Mandatory",
+   "fieldtype": "Check",
+   "default": 1
+  },
+  {
+   "fieldname": "active",
+   "label": "Active",
+   "fieldtype": "Check",
+   "default": 1
   }
  ],
  "grid_page_length": 50,

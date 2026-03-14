@@ -1,438 +1,425 @@
 from __future__ import annotations
 
-import io
 import json
-import uuid
 
 import frappe
-import qrcode
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, flt, get_datetime, now_datetime, nowdate
+from frappe.utils import add_to_date, cint, flt, get_datetime, now_datetime, nowdate
 
-try:
-    from hijri_converter import Gregorian
-except Exception:
-    Gregorian = None
+from tss.utils.transport_naming import clean_long_text, clean_text, make_trip_code
+from tss.tss.doctype.route.route import get_or_create_reverse_route_name
+from tss.utils.transport_printing import build_trip_print_context
+from tss.utils.transport_validation import (
+    build_hijri_date,
+    build_public_url,
+    build_qr_data_uri,
+    ensure_same_company,
+    save_qr_image_file,
+    ensure_staff_is_driver,
+    ensure_staff_same_company,
+    validate_child_row_uniqueness,
+    validate_datetime_order,
+)
 
 
 class Trip(Document):
     def before_insert(self):
-        self.set_trip_code()
-        self.set_default_values()
-        self.set_uuid_and_token()
-        self.set_hijri_date()
+        self._set_if_present("trip_date", self._value("trip_date") or nowdate())
+        self._set_if_present("trip_code", self._value("trip_code") or make_trip_code(self._value("trip_date")))
+        self.apply_default_schedule()
 
     def validate(self):
-        self.normalize_fields()
+        self._map_legacy_fields()
+        self._set_if_present("notes", clean_long_text(self._value("notes")))
+        self._set_if_present("trip_status", clean_text(self._value("trip_status") or "Draft"))
+        self._set_if_present("customer_name", clean_text(self._value("customer_name")))
+        self._set_if_present("mobile_no", clean_text(self._value("mobile_no")))
+        self.sync_from_booking()
+        self.sync_driver_vehicle()
+        self.apply_default_schedule()
+        self.sync_route_snapshot()
+        self.sync_passengers()
         self.validate_required_fields()
         self.validate_dates()
-        self.validate_numeric_values()
-        self.validate_driver_vehicle()
-        self.pull_route_defaults()
-        self.calculate_duration()
-        self.calculate_financials()
-        self.sync_passenger_count()
-        self.build_trip_title()
+        self.validate_links()
+        self.validate_direction_sequence()
+        self.validate_staff_rows()
+        self.sync_capacity()
+        self._set_if_present("hijri_date", build_hijri_date(self._value("trip_date")))
+        self._set_if_present(
+            "trip_title",
+            " | ".join(str(value) for value in [self._value("trip_code"), self._value("trip_date")] if value),
+        )
         self.build_qr_payload()
 
-    def on_update(self):
-        self.sync_booking_reference()
-
-    # -------------------------
-    # Setup
-    # -------------------------
-    def set_trip_code(self):
-        if not self.trip_code:
-            self.trip_code = frappe.model.naming.make_autoname("TRP-.YYYY.-.#####")
-
-    def set_default_values(self):
-        if not self.trip_status:
-            self.trip_status = "Scheduled"
-
-        if not self.trip_date:
-            self.trip_date = nowdate()
-
-        if not self.number_of_passengers:
-            self.number_of_passengers = 1
-
-        if not self.distance_unit:
-            self.distance_unit = "KM"
-
-    def set_uuid_and_token(self):
-        if not self.uuid:
-            self.uuid = str(uuid.uuid4())
-
-        if not self.qr_token:
-            self.qr_token = uuid.uuid4().hex
-
-    def set_hijri_date(self):
-        if not self.trip_date:
-            return
-
-        if Gregorian:
-            try:
-                y, m, d = [int(x) for x in str(self.trip_date).split("-")]
-                hijri = Gregorian(y, m, d).to_hijri()
-                self.hijri_date = f"{hijri.day:02d}-{hijri.month:02d}-{hijri.year}"
-            except Exception:
-                self.hijri_date = ""
-        else:
-            self.hijri_date = ""
-
-    def normalize_fields(self):
-        self.customer_name = (self.customer_name or "").strip()
-        self.mobile_no = (self.mobile_no or "").strip()
-        self.from_location = (self.from_location or "").strip()
-        self.to_location = (self.to_location or "").strip()
-        self.travel_agency = (self.travel_agency or "").strip()
-        self.special_instructions = (self.special_instructions or "").strip()
-        self.remarks = (self.remarks or "").strip()
-
-    # -------------------------
-    # Validation
-    # -------------------------
     def validate_required_fields(self):
-        required = {
-            "Base Company": self.base_company,
-            "Customer Name": self.customer_name,
-            "Trip Date": self.trip_date,
-        }
-
-        for label, value in required.items():
+        for label, value in {
+            "Base Company": self._value("base_company"),
+            "Trip Date": self._value("trip_date"),
+        }.items():
             if not value:
                 frappe.throw(_("{0} is required.").format(label))
+        if self._value("trip_status") in ("Scheduled", "Open", "In Progress", "Completed", "Closed"):
+            for label, value in {
+                "Route": self._value("route"),
+                "Departure Datetime": self._value("departure_datetime"),
+                "Vehicle": self._value("vehicle"),
+                "Driver": self._value("driver"),
+            }.items():
+                if not value:
+                    frappe.throw(_("{0} is required when Trip Status is {1}.").format(label, self._value("trip_status")))
 
-    def validate_dates(self):
-        if self.departure and self.arrival:
-            if get_datetime(self.arrival) < get_datetime(self.departure):
-                frappe.throw(_("Arrival cannot be before Departure."))
-
-    def validate_numeric_values(self):
-        numeric_fields = {
-            "Distance": self.distance,
-            "Duration Minutes": self.duration_minutes,
-            "Avg Speed": self.avg_speed_kmph,
-            "Passenger Count": self.number_of_passengers,
-            "Per Passenger Value": self.per_passenger_value,
-            "Booking Amount": self.booking_amount,
-            "Trip Value": self.trip_value,
-            "Driver Share": self.driver_share,
-            "Company Share": self.company_share,
-            "Referral Commission Value": self.referral_commission_value,
-            "Odometer Start": self.odometer_start,
-            "Odometer End": self.odometer_end,
-        }
-
-        for label, value in numeric_fields.items():
-            if value is not None and flt(value) < 0:
-                frappe.throw(_("{0} cannot be negative.").format(label))
-
-        if self.number_of_passengers is not None and cint(self.number_of_passengers) <= 0:
-            frappe.throw(_("Passenger Count must be greater than zero."))
-
-        if self.odometer_start and self.odometer_end and flt(self.odometer_end) < flt(self.odometer_start):
-            frappe.throw(_("Odometer End cannot be before Odometer Start."))
-
-    def validate_driver_vehicle(self):
-        for fieldname in ("assigned_driver", "co_driver"):
-            driver = self.get(fieldname)
-            if driver and frappe.db.exists("Staff", driver):
-                is_driver = frappe.db.get_value("Staff", driver, "is_driver")
-                if not cint(is_driver):
-                    frappe.throw(_("{0} must be a driver.").format(self.meta.get_label(fieldname)))
-
-        if self.assigned_vehicle and frappe.db.exists("Vehicle", self.assigned_vehicle):
-            vehicle_doc = frappe.get_doc("Vehicle", self.assigned_vehicle)
-
-            if self.vehicle_type and vehicle_doc.vehicle_type != self.vehicle_type:
-                frappe.throw(_("Assigned Vehicle does not belong to selected Vehicle Type."))
-
-    def pull_route_defaults(self):
-        if not self.route or not frappe.db.exists("Route", self.route):
+    def sync_from_booking(self):
+        if not self._value("trip_booking"):
             return
 
-        route_doc = frappe.get_doc("Route", self.route)
+        booking = frappe.get_doc("Trip Booking", self._value("trip_booking"))
+        if self._value("base_company") and booking.base_company and booking.base_company != self._value("base_company"):
+            frappe.throw(_("Trip Booking must belong to the same Base Company."))
+        if booking.trip and booking.trip != self.name:
+            frappe.throw(_("Trip Booking {0} is already linked to Trip {1}.").format(booking.name, booking.trip))
 
-        if not self.distance and route_doc.distance:
-            self.distance = route_doc.distance
-        if not self.duration_minutes and route_doc.duration_minutes:
-            self.duration_minutes = route_doc.duration_minutes
-        if not self.avg_speed_kmph and route_doc.avg_speed_kmph:
-            self.avg_speed_kmph = route_doc.avg_speed_kmph
-        if not self.from_location and route_doc.from_place_full:
-            self.from_location = route_doc.from_place_full
-        if not self.to_location and route_doc.to_place_full:
-            self.to_location = route_doc.to_place_full
+        self._set_if_present("base_company", booking.base_company)
+        self._set_if_present("route", booking.route or self._value("route"))
+        self._set_if_present("pricing_rule", booking.pricing_rule or self._value("pricing_rule"))
+        self._set_if_present("customer_name", booking.passenger_name or self._value("customer_name"))
+        self._set_if_present("mobile_no", booking.mobile_no or self._value("mobile_no"))
+        booking_passengers = booking.get("booking_passenger") or []
+        self._set_if_present("passenger_count", cint(booking.seat_count or len(booking_passengers) or 1))
+        self._set_if_present("number_of_passengers", cint(booking.seat_count or len(booking_passengers) or 1))
+        if self.meta.has_field("passengers") and not (self.get("passengers") or []):
+            self.set("passengers", [])
+            for row in booking_passengers:
+                self.append(
+                    "passengers",
+                    {
+                        "passenger_name": row.passenger_name,
+                        "passenger_name_ar": row.passenger_name_ar,
+                        "nationality": row.nationality,
+                        "document_type": row.document_type,
+                        "document_number": row.document_number,
+                        "mobile_no": row.mobile_no,
+                        "seat_no": row.seat_no,
+                        "source": "Booking",
+                        "expiry_date": row.expiry_date,
+                        "notes": row.notes,
+                    },
+                )
 
-    def calculate_duration(self):
-        if self.departure and self.arrival:
-            delta = get_datetime(self.arrival) - get_datetime(self.departure)
-            self.duration_minutes = max(0, int(delta.total_seconds() // 60))
+    def sync_driver_vehicle(self):
+        driver = self._value("driver")
+        if not driver:
+            return
 
-        minutes = cint(self.duration_minutes)
-        if minutes > 0:
-            hours = minutes // 60
-            mins = minutes % 60
-            if hours and mins:
-                self.duration_text = f"{hours}h {mins}m"
-            elif hours:
-                self.duration_text = f"{hours}h"
-            else:
-                self.duration_text = f"{mins}m"
-        else:
-            self.duration_text = ""
+        ensure_staff_is_driver(driver, self._value("base_company"))
+        assigned_vehicle = frappe.db.get_value("Staff", driver, "assigned_vehicle")
+        if assigned_vehicle and not self._value("vehicle"):
+            self._set_if_present("vehicle", assigned_vehicle)
+            self._set_if_present("assigned_vehicle", assigned_vehicle)
+        elif not self._value("vehicle"):
+            vehicle = frappe.db.get_value("Vehicle", {"assigned_driver": driver, "status": "Active"})
+            self._set_if_present("vehicle", vehicle)
+            self._set_if_present("assigned_vehicle", vehicle)
+        if self._value("vehicle") and not self._value("route"):
+            self._set_if_present("route", frappe.db.get_value("Vehicle", self._value("vehicle"), "default_route"))
 
-    def calculate_financials(self):
-        passenger_count = cint(self.number_of_passengers or 0)
+    def apply_default_schedule(self):
+        default_departure = self._value("departure_datetime") or now_datetime()
+        self._set_if_present("departure_datetime", default_departure)
+        route = self._value("route")
+        minutes = cint(frappe.db.get_value("Route", route, "estimated_duration_minutes")) if route else 0
+        computed_arrival = add_to_date(default_departure, minutes=minutes or 0, as_datetime=True)
+        if get_datetime(computed_arrival) < get_datetime(default_departure):
+            computed_arrival = default_departure
+        self._set_if_present("arrival_datetime", computed_arrival)
 
-        if flt(self.per_passenger_value) and passenger_count and not flt(self.trip_value):
-            self.trip_value = flt(self.per_passenger_value) * passenger_count
+    def validate_dates(self):
+        self.normalize_schedule_window()
+        validate_datetime_order(self._value("departure_datetime"), self._value("arrival_datetime"), "Departure Datetime", "Arrival Datetime")
+        validate_datetime_order(
+            self._value("actual_departure_datetime"),
+            self._value("actual_arrival_datetime"),
+            "Actual Departure Datetime",
+            "Actual Arrival Datetime",
+        )
+        if flt(self._value("seat_capacity")) < 0 or flt(self._value("available_seats")) < 0:
+            frappe.throw(_("Seat values cannot be negative."))
 
-        if flt(self.booking_amount) and not flt(self.trip_value):
-            self.trip_value = flt(self.booking_amount)
+    def normalize_schedule_window(self):
+        departure = self._value("departure_datetime")
+        arrival = self._value("arrival_datetime")
+        if not departure:
+            return
+        if not arrival:
+            self.apply_default_schedule()
+            return
+        if get_datetime(arrival) >= get_datetime(departure):
+            return
 
-        if flt(self.trip_value) and flt(self.driver_share):
-            self.company_share = flt(self.trip_value) - flt(self.driver_share)
+        route = self._value("route")
+        minutes = cint(frappe.db.get_value("Route", route, "estimated_duration_minutes")) if route else 0
+        corrected_arrival = add_to_date(departure, minutes=minutes or 0, as_datetime=True)
+        if get_datetime(corrected_arrival) < get_datetime(departure):
+            corrected_arrival = departure
+        self._set_if_present("arrival_datetime", corrected_arrival)
 
-    def sync_passenger_count(self):
-        passenger_rows = self.get("passengers") or []
+    def validate_links(self):
+        if self._value("vehicle"):
+            ensure_same_company(self._value("base_company"), "Vehicle", self._value("vehicle"))
+        if self._value("driver"):
+            ensure_staff_is_driver(self._value("driver"), self._value("base_company"))
+        if self._value("conductor"):
+            ensure_staff_same_company(self._value("conductor"), self._value("base_company"))
+        if self._value("co_driver"):
+            ensure_staff_is_driver(self._value("co_driver"), self._value("base_company"))
+            if self._value("co_driver") == self._value("driver"):
+                frappe.throw(_("Co Driver cannot be the same as Driver."))
+        if self._value("pricing_rule"):
+            ensure_same_company(self._value("base_company"), "Trip Pricing Rule", self._value("pricing_rule"))
 
-        if passenger_rows:
-            self.number_of_passengers = len(passenger_rows)
+        if self._value("vehicle"):
+            vehicle_doc = frappe.get_doc("Vehicle", self._value("vehicle"))
+            if not cint(vehicle_doc.is_active):
+                frappe.throw(_("Vehicle must be active."))
+            if self._value("driver") and vehicle_doc.assigned_driver and vehicle_doc.assigned_driver != self._value("driver"):
+                frappe.throw(_("Selected vehicle is assigned to a different driver."))
+            if not self._value("seat_capacity"):
+                self._set_if_present("seat_capacity", cint(vehicle_doc.seat_capacity or 0))
 
-        seen_docs = set()
-        for row in passenger_rows:
-            row.passenger_name = (row.passenger_name or "").strip()
-            row.passenger_name_ar = (row.passenger_name_ar or "").strip()
-            row.document_number = (row.document_number or "").strip()
-            row.contact_no = (row.contact_no or "").strip()
-            row.notes = (row.notes or "").strip()
+        rows = frappe.get_all(
+            "Trip",
+            filters={
+                "name": ["!=", self.name],
+                "base_company": self._value("base_company"),
+                "trip_status": ["in", ["Scheduled", "Open", "In Progress"]],
+            },
+            fields=["name", "vehicle", "driver", "co_driver", "departure_datetime", "arrival_datetime"],
+        )
+        current_start = get_datetime(self._value("departure_datetime"))
+        current_end = get_datetime(self._value("arrival_datetime") or self._value("departure_datetime"))
+        for row in rows:
+            row_start = get_datetime(row.departure_datetime)
+            row_end = get_datetime(row.arrival_datetime or row.departure_datetime)
+            if row_start <= current_end and row_end >= current_start:
+                if self._value("vehicle") and row.vehicle == self._value("vehicle"):
+                    frappe.throw(_("Vehicle conflict with Trip {0}.").format(row.name))
+                if self._value("driver") and self._value("driver") in (row.driver, row.co_driver):
+                    frappe.throw(_("Driver conflict with Trip {0}.").format(row.name))
+                if self._value("co_driver") and self._value("co_driver") in (row.driver, row.co_driver):
+                    frappe.throw(_("Co Driver conflict with Trip {0}.").format(row.name))
 
-            if row.document_type and row.document_number:
-                key = (row.document_type, row.document_number)
-                if key in seen_docs:
-                    frappe.throw(_("Duplicate passenger document found: {0} / {1}").format(*key))
-                seen_docs.add(key)
+        if flt(self._value("distance_km_snapshot")) >= 500 and not self._value("co_driver"):
+            frappe.throw(_("Co Driver is required for routes with distance 500 KM or more."))
 
-    def build_trip_title(self):
-        parts = [self.customer_name, self.trip_date]
-        if self.route:
-            parts.append(self.route)
-        self.trip_title = " - ".join([str(p) for p in parts if p])
+    def validate_direction_sequence(self):
+        if not self._value("driver") or not self._value("from_location"):
+            return
+
+        current_start = get_datetime(self._value("departure_datetime") or now_datetime())
+        last_trip = frappe.db.sql(
+            """
+            select name, from_location, to_location, route, trip_date, departure_datetime
+            from `tabTrip`
+            where name != %s
+              and driver = %s
+              and trip_status not in ('Cancelled', 'Draft')
+              and ifnull(departure_datetime, creation) <= %s
+            order by ifnull(departure_datetime, creation) desc, modified desc
+            limit 1
+            """,
+            (self.name or "", self._value("driver"), current_start),
+            as_dict=True,
+        )
+        if not last_trip:
+            return
+
+        last_trip = last_trip[0]
+        previous_destination = clean_text(last_trip.to_location)
+        current_source = clean_text(self._value("from_location"))
+        if not previous_destination or not current_source or previous_destination == current_source:
+            return
+
+        frappe.throw(
+            _(
+                "Driver {0} last destination was {1}. Next trip must start from that destination, not from {2}."
+            ).format(self._value("driver"), previous_destination, current_source)
+        )
+
+    def validate_staff_rows(self):
+        rows = self.get("trip_staff") or []
+        validate_child_row_uniqueness(rows, lambda row: (row.staff,), "trip staff")
+        for row in rows:
+            ensure_staff_same_company(row.staff, self._value("base_company"))
+            row.notes = clean_long_text(row.notes)
+        if self._value("driver") and not any(row.staff == self._value("driver") for row in rows):
+            self.append("trip_staff", {"staff": self._value("driver"), "role_type": "Driver", "is_primary": 1})
+
+    def sync_capacity(self):
+        booked = frappe.db.sql(
+            """
+            select ifnull(sum(seat_count), 0)
+            from `tabTrip Booking`
+            where trip=%s and name!=%s and booking_status not in ('Cancelled', 'Closed')
+            """,
+            (self.name, self.name or ""),
+        )[0][0]
+        available = max(0, cint(self._value("seat_capacity") or 0) - cint(booked or 0))
+        self._set_if_present("available_seats", available)
+
+    def sync_passengers(self):
+        if not self.meta.has_field("passengers"):
+            return
+
+        rows = self.get("passengers") or []
+        validate_child_row_uniqueness(rows, lambda row: (clean_text(row.document_number),), "trip passenger document")
+        validate_child_row_uniqueness(rows, lambda row: (clean_text(row.seat_no),), "trip passenger seat")
+        for row in rows:
+            row.passenger_name = clean_text(row.passenger_name)
+            row.passenger_name_ar = clean_text(row.passenger_name_ar)
+            row.nationality = clean_text(row.nationality)
+            row.document_number = clean_text(row.document_number)
+            row.mobile_no = clean_text(row.mobile_no)
+            row.source = clean_text(row.source or "Manual")
+            row.notes = clean_long_text(row.notes)
+
+        if rows:
+            self._set_if_present("passenger_count", len(rows))
+            self._set_if_present("number_of_passengers", len(rows))
+            if not self._value("customer_name"):
+                self._set_if_present("customer_name", rows[0].passenger_name)
+            if not self._value("mobile_no"):
+                self._set_if_present("mobile_no", rows[0].mobile_no)
+
+    def sync_route_snapshot(self):
+        if not self._value("route") or not frappe.db.exists("Route", self._value("route")):
+            return
+        route_doc = frappe.get_cached_doc("Route", self._value("route"))
+        self._set_if_present("route_label", route_doc.route_title or route_doc.route_name or route_doc.name)
+        self._set_if_present("from_location", route_doc.source)
+        self._set_if_present("to_location", route_doc.destination)
+        self._set_if_present("distance_km_snapshot", flt(route_doc.distance_km))
+        self._set_if_present("duration_minutes_snapshot", cint(route_doc.estimated_duration_minutes))
 
     def build_qr_payload(self):
         payload = {
-            "trip": self.name or self.trip_code,
-            "trip_code": self.trip_code,
-            "trip_status": self.trip_status,
-            "trip_date": str(self.trip_date) if self.trip_date else None,
-            "trip_time": str(self.trip_time) if self.trip_time else None,
-            "customer_name": self.customer_name,
-            "mobile_no": self.mobile_no,
-            "route": self.route,
-            "from_location": self.from_location,
-            "to_location": self.to_location,
-            "assigned_vehicle": self.assigned_vehicle,
-            "assigned_driver": self.assigned_driver,
-            "passenger_count": self.number_of_passengers,
-            "qr_token": self.qr_token,
+            "trip": self.name or self._value("trip_code"),
+            "trip_code": self._value("trip_code"),
+            "trip_status": self._value("trip_status"),
+            "trip_date": str(self._value("trip_date")) if self._value("trip_date") else "",
+            "route": self._value("route"),
+            "vehicle": self._value("vehicle"),
+            "driver": self._value("driver"),
+            "available_seats": self._value("available_seats"),
+            "public_url": build_public_url("tss", "trip", self.name or self._value("trip_code")),
         }
-        self.qr_payload = json.dumps(payload, ensure_ascii=False)
+        self._set_if_present("qr_payload", json.dumps(payload, sort_keys=True))
+        if not self._value("qr_code"):
+            self._set_if_present("qr_code", build_qr_data_uri(self._value("qr_payload")))
 
-    # -------------------------
-    # Status actions
-    # -------------------------
-    def mark_confirmed(self):
-        self.check_permission("write")
-        self.trip_status = "Confirmed"
-        self.save()
+    def as_api_dict(self) -> dict:
+        data = self.as_dict()
+        data["print_context"] = build_trip_print_context(self)
+        return data
 
-    def mark_departed(self):
-        self.check_permission("write")
-        self.trip_status = "Departed"
-        if not self.departure:
-            self.departure = now_datetime()
-        self.save()
+    def on_update(self):
+        if self._value("trip_booking"):
+            frappe.db.set_value("Trip Booking", self._value("trip_booking"), "trip", self.name, update_modified=False)
+        self.attach_qr_code_image()
 
-    def mark_arrived(self):
-        self.check_permission("write")
-        self.trip_status = "Arrived"
-        if not self.arrival:
-            self.arrival = now_datetime()
-        self.save()
+    def _value(self, fieldname: str, default=None):
+        return self.get(fieldname, default)
 
-    def mark_completed(self):
-        self.check_permission("write")
-        self.trip_status = "Completed"
-        if not self.arrival:
-            self.arrival = now_datetime()
-        self.save()
+    def _set_if_present(self, fieldname: str, value):
+        if self.meta.has_field(fieldname):
+            self.set(fieldname, value)
 
-    def mark_cancelled(self):
-        self.check_permission("write")
-        self.trip_status = "Cancelled"
-        self.save()
+    def _map_legacy_fields(self):
+        legacy_driver = self._value("assigned_driver")
+        legacy_vehicle = self._value("assigned_vehicle")
 
-    # -------------------------
-    # QR code
-    # -------------------------
-    def generate_qr_code(self):
-        self.check_permission("write")
+        if legacy_driver and not self._value("driver"):
+            self._set_if_present("driver", legacy_driver)
+        if legacy_vehicle and not self._value("vehicle"):
+            self._set_if_present("vehicle", legacy_vehicle)
+        if self._value("driver") and legacy_driver != self._value("driver") and "assigned_driver" in self.as_dict():
+            self.set("assigned_driver", self._value("driver"))
+        if self._value("vehicle") and legacy_vehicle != self._value("vehicle") and "assigned_vehicle" in self.as_dict():
+            self.set("assigned_vehicle", self._value("vehicle"))
 
-        if not self.qr_payload:
-            self.build_qr_payload()
+    def attach_qr_code_image(self):
+        if not self.name or not self._value("qr_payload") or not self.meta.has_field("qr_code"):
+            return
+        file_url = save_qr_image_file(self._value("qr_payload"), self.doctype, self.name, "qr_code")
+        if file_url and self._value("qr_code") != file_url:
+            self.db_set("qr_code", file_url, update_modified=False)
 
-        img = qrcode.make(self.qr_payload)
-        buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
 
-        file_name = f"{self.trip_code or self.name}-qr.png"
-        file_doc = frappe.get_doc(
-            {
-                "doctype": "File",
-                "file_name": file_name,
-                "attached_to_doctype": "Trip",
-                "attached_to_name": self.name,
-                "is_private": 1,
-                "content": buffer.getvalue(),
-            }
-        )
-        file_doc.save(ignore_permissions=True)
+@frappe.whitelist()
+def create_return_trip(source_trip: str) -> str:
+    source = frappe.get_doc("Trip", source_trip)
+    source.check_permission("read")
 
-        self.qr_code = file_doc.file_url
-        self.save()
-        return self.qr_code
-
-    # -------------------------
-    # Booking sync
-    # -------------------------
-    def sync_booking_reference(self):
-        if self.trip_booking and frappe.db.exists("Trip Booking", self.trip_booking):
-            booking_status = "In Progress" if self.trip_status in ("Departed", "Arrived") else None
-            if self.trip_status == "Completed":
-                booking_status = "Completed"
-            elif self.trip_status == "Cancelled":
-                booking_status = "Cancelled"
-            elif self.trip_status in ("Scheduled", "Confirmed"):
-                booking_status = "Assigned"
-
-            values = {"trip": self.name}
-            if booking_status:
-                values["status"] = booking_status
-
-            frappe.db.set_value("Trip Booking", self.trip_booking, values, update_modified=False)
-
-    # -------------------------
-    # Passenger helper from booking
-    # -------------------------
-    def pull_passengers_from_booking(self):
-        self.check_permission("write")
-
-        if not self.trip_booking or not frappe.db.exists("Trip Booking", self.trip_booking):
-            return 0
-
-        booking = frappe.get_doc("Trip Booking", self.trip_booking)
-        booking_rows = booking.get("booking_passenger") or []
-
-        if not booking_rows:
-            return 0
-
-        self.set("passengers", [])
-        for row in booking_rows:
-            self.append(
-                "passengers",
+    reverse_route = get_or_create_reverse_route_name(source.route) if source.route else None
+    new_trip = frappe.get_doc(
+        {
+            "doctype": "Trip",
+            "base_company": source.base_company,
+            "route": reverse_route or source.route,
+            "driver": source.driver,
+            "vehicle": source.vehicle,
+            "conductor": source.conductor,
+            "pricing_rule": source.pricing_rule,
+            "customer_name": source.customer_name,
+            "mobile_no": source.mobile_no,
+            "passenger_count": source.passenger_count,
+            "is_return_trip": 1,
+            "notes": _("Return trip generated from {0}.").format(source.name),
+            "passengers": [
                 {
                     "passenger_name": row.passenger_name,
                     "passenger_name_ar": row.passenger_name_ar,
                     "nationality": row.nationality,
-                    "passenger_master": row.passenger_master,
                     "document_type": row.document_type,
                     "document_number": row.document_number,
-                    "contact_no": row.contact_no,
-                    "source": row.source or "BOOKING",
-                    "expiry_date": row.expiry_date,
+                    "mobile_no": row.mobile_no,
                     "seat_no": row.seat_no,
+                    "source": row.source,
+                    "expiry_date": row.expiry_date,
                     "notes": row.notes,
-                    "is_auto_filled": 1,
-                },
-            )
-
-        self.sync_passenger_count()
-        self.save()
-        return len(self.passengers)
-
-    # -------------------------
-    # API helper
-    # -------------------------
-    def as_api_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "trip_code": self.trip_code,
-            "trip_title": self.trip_title,
-            "trip_status": self.trip_status,
-            "created_from_booking": self.created_from_booking,
-            "trip_booking": self.trip_booking,
-            "base_company": self.base_company,
-            "uuid": self.uuid,
-            "hijri_date": self.hijri_date,
-            "customer": self.customer,
-            "customer_name": self.customer_name,
-            "mobile_no": self.mobile_no,
-            "number_of_passengers": self.number_of_passengers,
-            "per_passenger_value": self.per_passenger_value,
-            "currency": self.currency,
-            "trip_date": self.trip_date,
-            "trip_time": self.trip_time,
-            "departure": self.departure,
-            "arrival": self.arrival,
-            "trip_type": self.trip_type,
-            "route": self.route,
-            "from_location": self.from_location,
-            "to_location": self.to_location,
-            "vehicle_type": self.vehicle_type,
-            "assigned_vehicle": self.assigned_vehicle,
-            "assigned_driver": self.assigned_driver,
-            "co_driver": self.co_driver,
-            "kashf_sent": self.kashf_sent,
-            "is_return_trip": self.is_return_trip,
-            "travel_agency": self.travel_agency,
-            "is_referral": self.is_referral,
-            "distance": self.distance,
-            "distance_unit": self.distance_unit,
-            "duration_minutes": self.duration_minutes,
-            "duration_text": self.duration_text,
-            "avg_speed_kmph": self.avg_speed_kmph,
-            "odometer_start": self.odometer_start,
-            "odometer_end": self.odometer_end,
-            "booking_amount": self.booking_amount,
-            "trip_value": self.trip_value,
-            "driver_share": self.driver_share,
-            "company_share": self.company_share,
-            "referral_commission_type": self.referral_commission_type,
-            "referral_commission_value": self.referral_commission_value,
-            "sales_invoice": self.sales_invoice,
-            "qr_token": self.qr_token,
-            "qr_payload": self.qr_payload,
-            "qr_code": self.qr_code,
-            "special_instructions": self.special_instructions,
-            "remarks": self.remarks,
-            "passengers": [
-                {
-                    "passenger_name": d.passenger_name,
-                    "passenger_name_ar": d.passenger_name_ar,
-                    "nationality": d.nationality,
-                    "passenger_master": d.passenger_master,
-                    "document_type": d.document_type,
-                    "document_number": d.document_number,
-                    "contact_no": d.contact_no,
-                    "source": d.source,
-                    "expiry_date": d.expiry_date,
-                    "seat_no": d.seat_no,
-                    "notes": d.notes,
-                    "is_auto_filled": d.is_auto_filled,
                 }
-                for d in (self.get("passengers") or [])
+                for row in (source.get("passengers") or [])
             ],
         }
+    )
+    new_trip.insert()
+    return new_trip.name
+
+
+@frappe.whitelist()
+def pull_passengers_from_booking(trip_name: str) -> int:
+    trip = frappe.get_doc("Trip", trip_name)
+    trip.check_permission("write")
+    if not trip.trip_booking:
+        frappe.throw(_("Trip Booking is required."))
+
+    booking = frappe.get_doc("Trip Booking", trip.trip_booking)
+    trip.set("passengers", [])
+    for row in booking.get("booking_passenger") or []:
+        trip.append(
+            "passengers",
+            {
+                "passenger_name": row.passenger_name,
+                "passenger_name_ar": row.passenger_name_ar,
+                "nationality": row.nationality,
+                "document_type": row.document_type,
+                "document_number": row.document_number,
+                "mobile_no": row.mobile_no,
+                "seat_no": row.seat_no,
+                "source": "Booking",
+                "expiry_date": row.expiry_date,
+                "notes": row.notes,
+            },
+        )
+    trip.save()
+    return len(trip.get("passengers") or [])

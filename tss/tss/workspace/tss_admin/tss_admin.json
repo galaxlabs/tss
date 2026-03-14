@@ -1,0 +1,285 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"hdr-ops\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Actions</b></span>\",\"col\":12}},{\"id\":\"sc-vehicle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle\",\"col\":3}},{\"id\":\"sc-trip\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Trip\",\"col\":3}},{\"id\":\"sc-route\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Route\",\"col\":3}},{\"id\":\"sc-booking\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Trip Booking\",\"col\":3}},{\"id\":\"sc-pricing\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Trip Pricing Rule\",\"col\":3}},{\"id\":\"sc-inspection\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Inspection Log\",\"col\":3}},{\"id\":\"sc-staff\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Staff\",\"col\":3}},{\"id\":\"sc-company\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Base Company\",\"col\":3}},{\"id\":\"sp-1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr-masters\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>TSS Admin Control</b></span>\",\"col\":12}},{\"id\":\"card-fleet\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Control\",\"col\":4}},{\"id\":\"card-trip\",\"type\":\"card\",\"data\":{\"card_name\":\"Trip Operations\",\"col\":4}},{\"id\":\"card-rules\",\"type\":\"card\",\"data\":{\"card_name\":\"Rules & Planning\",\"col\":4}},{\"id\":\"card-admin\",\"type\":\"card\",\"data\":{\"card_name\":\"Admin Setup\",\"col\":4}}]",
+ "creation": "2026-03-14 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "setting-gear",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "TSS Admin",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Control",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle",
+   "link_count": 0,
+   "link_to": "Vehicle",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Type",
+   "link_count": 0,
+   "link_to": "Vehicle Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Category",
+   "link_count": 0,
+   "link_to": "Vehicle Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Make",
+   "link_count": 0,
+   "link_to": "Vehicle Make",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Model",
+   "link_count": 0,
+   "link_to": "Vehicle Model",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Inspection Log",
+   "link_count": 0,
+   "link_to": "Vehicle Inspection Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Operations",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip",
+   "link_count": 0,
+   "link_to": "Trip",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Booking",
+   "link_count": 0,
+   "link_to": "Trip Booking",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Staff Assignment",
+   "link_count": 0,
+   "link_to": "Trip Staff Assignment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Passengers",
+   "link_count": 0,
+   "link_to": "Passengers",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Rules & Planning",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Route",
+   "link_count": 0,
+   "link_to": "Route",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Pricing Rule",
+   "link_count": 0,
+   "link_to": "Trip Pricing Rule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Demand Supply Rule",
+   "link_count": 0,
+   "link_to": "Demand Supply Rule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Peak Hour Rule",
+   "link_count": 0,
+   "link_to": "Peak Hour Rule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transport Settings",
+   "link_count": 0,
+   "link_to": "Transport Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Admin Setup",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Base Company",
+   "link_count": 0,
+   "link_to": "Base Company",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Staff",
+   "link_count": 0,
+   "link_to": "Staff",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "TSS Admin",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Admin"
+  }
+ ],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "label": "Vehicle",
+   "link_to": "Vehicle",
+   "type": "DocType"
+  },
+  {
+   "label": "Trip",
+   "link_to": "Trip",
+   "type": "DocType"
+  },
+  {
+   "label": "Route",
+   "link_to": "Route",
+   "type": "DocType"
+  },
+  {
+   "label": "Trip Booking",
+   "link_to": "Trip Booking",
+   "type": "DocType"
+  },
+  {
+   "label": "Trip Pricing Rule",
+   "link_to": "Trip Pricing Rule",
+   "type": "DocType"
+  },
+  {
+   "label": "Vehicle Inspection Log",
+   "link_to": "Vehicle Inspection Log",
+   "type": "DocType"
+  },
+  {
+   "label": "Staff",
+   "link_to": "Staff",
+   "type": "DocType"
+  },
+  {
+   "label": "Base Company",
+   "link_to": "Base Company",
+   "type": "DocType"
+  }
+ ],
+ "title": "TSS Admin"
+}

@@ -5,9 +5,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "track_changes": 1,
- "title_field": "rule_title",
+ "title_field": "rule_name",
  "search_fields": "rule_code,rule_title,base_company,vehicle_type,route",
- "autoname": "field:rule_code",
+ "autoname": "naming_series:",
  "field_order": [
   "section_identity",
   "rule_code",
@@ -28,7 +28,13 @@
   "fixed_surcharge",
   "section_notes",
   "description",
-  "remarks"
+  "remarks",
+  "naming_series",
+  "rule_name",
+  "applies_on",
+  "threshold_low",
+  "threshold_high",
+  "notes"
  ],
  "fields": [
   {
@@ -82,7 +88,6 @@
    "label": "Is Active",
    "default": "1"
   },
-
   {
    "fieldname": "section_scope",
    "fieldtype": "Section Break",
@@ -131,7 +136,6 @@
    "fieldtype": "Currency",
    "label": "Fixed Surcharge"
   },
-
   {
    "fieldname": "section_notes",
    "fieldtype": "Section Break",
@@ -146,6 +150,41 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Naming Series",
+   "fieldtype": "Select",
+   "options": "DSR-.YYYY.-.#####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rule_name",
+   "label": "Rule Name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "applies_on",
+   "label": "Applies On",
+   "fieldtype": "Select",
+   "options": "\nBooking Count\nVehicle Availability\nCustom"
+  },
+  {
+   "fieldname": "threshold_low",
+   "label": "Threshold Low",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "threshold_high",
+   "label": "Threshold High",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "notes",
+   "label": "Notes",
+   "fieldtype": "Small Text"
   }
  ],
  "grid_page_length": 50,

@@ -1,177 +1,62 @@
 {
- "actions": [],
  "allow_rename": 1,
- "creation": "2026-03-12 21:32:15.060448",
+ "autoname": "field:model_name",
  "doctype": "DocType",
  "engine": "InnoDB",
-  "track_changes": 1,
-  "title_field": "model_name",
-  "search_fields": "model_name,model_name_ar,model_code,vehicle_make,vehicle_type",
-  "fields": [
-    {
-      "fieldname": "section_identity",
-      "fieldtype": "Section Break",
-      "label": "Identity"
-    },
-    {
-      "fieldname": "model_name",
-      "fieldtype": "Data",
-      "label": "Vehicle Model Name",
-      "reqd": 1,
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "model_name_ar",
-      "fieldtype": "Data",
-      "label": "Vehicle Model Name (Arabic)"
-    },
-    {
-      "fieldname": "model_code",
-      "fieldtype": "Data",
-      "label": "Vehicle Model Code",
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_identity_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "vehicle_make",
-      "fieldtype": "Link",
-      "label": "Vehicle Make",
-      "options": "Vehicle Make",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "vehicle_type",
-      "fieldtype": "Link",
-      "label": "Vehicle Type",
-      "options": "Vehicle Type",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "\nDraft\nActive\nInactive",
-      "default": "Draft",
-      "in_list_view": 1
-    },
-
-    {
-      "fieldname": "section_specs",
-      "fieldtype": "Section Break",
-      "label": "Specifications"
-    },
-    {
-      "fieldname": "model_year_from",
-      "fieldtype": "Int",
-      "label": "Model Year From"
-    },
-    {
-      "fieldname": "model_year_to",
-      "fieldtype": "Int",
-      "label": "Model Year To"
-    },
-    {
-      "fieldname": "passenger_capacity",
-      "fieldtype": "Int",
-      "label": "Passenger Capacity"
-    },
-    {
-      "fieldname": "fuel_type",
-      "fieldtype": "Select",
-      "label": "Fuel Type",
-      "options": "\nPetrol\nDiesel\nHybrid\nElectric\nOther"
-    },
-    {
-      "fieldname": "transmission_type",
-      "fieldtype": "Select",
-      "label": "Transmission Type",
-      "options": "\nAutomatic\nManual\nOther"
-    },
-    {
-      "fieldname": "column_break_specs_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "is_ac",
-      "fieldtype": "Check",
-      "label": "Air Conditioned",
-      "default": "1"
-    },
-    {
-      "fieldname": "luggage_capacity",
-      "fieldtype": "Float",
-      "label": "Luggage Capacity"
-    },
-    {
-      "fieldname": "luggage_capacity_unit",
-      "fieldtype": "Select",
-      "label": "Luggage Capacity Unit",
-      "options": "\nBags\nkg\nTon\nm3"
-    },
-
-    {
-      "fieldname": "section_display",
-      "fieldtype": "Section Break",
-      "label": "Display"
-    },
-    {
-      "fieldname": "image",
-      "fieldtype": "Attach Image",
-      "label": "Image"
-    },
-    {
-      "fieldname": "show_on_website",
-      "fieldtype": "Check",
-      "label": "Show on Website"
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Small Text",
-      "label": "Description"
-    },
-    {
-      "fieldname": "description_ar",
-      "fieldtype": "Small Text",
-      "label": "Description (Arabic)"
-    },
-    {
-      "fieldname": "remarks",
-      "fieldtype": "Small Text",
-      "label": "Remarks"
-    }
-  ],
+ "field_order": [
+  "model_identity_section",
+  "model_name",
+  "vehicle_make",
+  "column_break_model_identity",
+  "model_name_ar",
+  "model_code",
+  "vehicle_type",
+  "classification_section",
+  "vehicle_category",
+  "column_break_classification",
+  "status",
+  "detail_section",
+  "model_year_from",
+  "seat_capacity",
+  "column_break_detail",
+  "model_year_to",
+  "fuel_type",
+  "notes"
+ ],
+ "fields": [
+  {"fieldname": "model_name", "fieldtype": "Data", "label": "Vehicle Model Name", "reqd": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "model_identity_section", "fieldtype": "Section Break", "label": "Identity"},
+  {"fieldname": "vehicle_make", "fieldtype": "Link", "label": "Vehicle Make", "options": "Vehicle Make", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "column_break_model_identity", "fieldtype": "Column Break"},
+  {"fieldname": "model_name_ar", "fieldtype": "Data", "label": "Vehicle Model Name Arabic"},
+  {"fieldname": "model_code", "fieldtype": "Data", "label": "Vehicle Model Code", "unique": 1, "in_list_view": 1},
+  {"fieldname": "vehicle_type", "fieldtype": "Link", "label": "Vehicle Type", "options": "Vehicle Type", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "classification_section", "fieldtype": "Section Break", "label": "Classification"},
+  {"fieldname": "vehicle_category", "fieldtype": "Link", "label": "Vehicle Category", "options": "Vehicle Category", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "column_break_classification", "fieldtype": "Column Break"},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nActive\nInactive", "default": "Active", "in_list_view": 1},
+  {"fieldname": "detail_section", "fieldtype": "Section Break", "label": "Detail"},
+  {"fieldname": "model_year_from", "fieldtype": "Int", "label": "Model Year From"},
+  {"fieldname": "seat_capacity", "fieldtype": "Int", "label": "Seat Capacity"},
+  {"fieldname": "column_break_detail", "fieldtype": "Column Break"},
+  {"fieldname": "model_year_to", "fieldtype": "Int", "label": "Model Year To"},
+  {"fieldname": "fuel_type", "fieldtype": "Select", "label": "Fuel Type", "options": "Petrol\nDiesel\nHybrid\nElectric\nOther"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 21:32:15.060448",
- "modified_by": "Administrator",
  "module": "TSS",
  "name": "Vehicle Model",
- "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
+  {"role": "System Manager", "create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "share": 1, "write": 1}
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "model_name,model_name_ar,model_code,vehicle_make,vehicle_type",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "model_name",
+ "track_changes": 1
 }

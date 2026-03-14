@@ -21,37 +21,33 @@ def _parse_payload(payload=None):
     return frappe.local.form_dict
 
 
+def _as_api_dict(doc):
+    return doc.as_api_dict() if hasattr(doc, "as_api_dict") else doc.as_dict()
+
+
 def _vehicle_fields():
     return [
+        "vehicle_code",
+        "base_company",
         "vehicle_type",
         "vehicle_make",
         "vehicle_model",
+        "vehicle_category",
         "model_year",
-        "license_plate",
-        "plate_number",
-        "registration_no",
+        "plate_no",
+        "plate_no_ar",
         "chassis_no",
         "engine_no",
-        "base_company",
-        "assigned_driver",
-        "ownership_type",
+        "color",
+        "seat_capacity",
         "status",
         "is_active",
-        "passenger_capacity",
-        "luggage_capacity",
-        "luggage_capacity_unit",
+        "assigned_driver",
+        "ownership_type",
         "fuel_type",
-        "transmission_type",
-        "color",
-        "odometer_reading",
-        "odometer_unit",
-        "seat_configuration",
-        "purchase_date",
-        "service_start_date",
-        "insurance_expiry_date",
-        "registration_expiry_date",
-        "vehicle_image",
-        "remarks",
+        "odometer",
+        "default_route",
+        "notes",
     ]
 
 
@@ -91,9 +87,8 @@ def list_vehicles(
         or_filters = [
             ["Vehicle", "name", "like", f"%{search}%"],
             ["Vehicle", "vehicle_code", "like", f"%{search}%"],
-            ["Vehicle", "license_plate", "like", f"%{search}%"],
-            ["Vehicle", "plate_number", "like", f"%{search}%"],
-            ["Vehicle", "registration_no", "like", f"%{search}%"],
+            ["Vehicle", "display_title", "like", f"%{search}%"],
+            ["Vehicle", "plate_no", "like", f"%{search}%"],
             ["Vehicle", "chassis_no", "like", f"%{search}%"],
             ["Vehicle", "engine_no", "like", f"%{search}%"],
         ]
@@ -106,15 +101,16 @@ def list_vehicles(
             "name",
             "vehicle_code",
             "display_title",
+            "base_company",
             "vehicle_type",
             "vehicle_make",
             "vehicle_model",
-            "license_plate",
-            "base_company",
+            "plate_no",
             "assigned_driver",
+            "seat_capacity",
             "status",
             "is_active",
-            "odometer_reading",
+            "odometer",
         ],
         order_by="modified desc",
         limit_start=cint(limit_start),
@@ -130,7 +126,7 @@ def get_vehicle(name):
 
     doc = frappe.get_doc("Vehicle", name)
     _check_permission(doc, "read")
-    return {"data": doc.as_api_dict()}
+    return {"data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -138,23 +134,14 @@ def create_vehicle(payload=None):
     _require_auth()
 
     data = _parse_payload(payload)
-
-    doc_data = {
-        "doctype": "Vehicle",
-        "naming_series": data.get("naming_series") or "VEH-.YYYY.-.#####",
-        "documents": data.get("documents") or [],
-    }
+    doc_data = {"doctype": "Vehicle", "documents": data.get("documents") or []}
 
     for fieldname in _vehicle_fields():
         doc_data[fieldname] = data.get(fieldname)
 
     doc = frappe.get_doc(doc_data)
     doc.insert()
-
-    return {
-        "message": "Vehicle created successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Vehicle created successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["PUT", "POST"])
@@ -175,11 +162,7 @@ def update_vehicle(name, payload=None):
             doc.append("documents", row)
 
     doc.save()
-
-    return {
-        "message": "Vehicle updated successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Vehicle updated successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
@@ -188,35 +171,16 @@ def delete_vehicle(name):
 
     doc = frappe.get_doc("Vehicle", name)
     _check_permission(doc, "delete")
-
     frappe.delete_doc("Vehicle", name)
-
     return {"message": "Vehicle deleted successfully."}
 
 
 @frappe.whitelist(methods=["POST"])
-def activate_vehicle(name):
+def set_vehicle_status(name, status):
     _require_auth()
 
     doc = frappe.get_doc("Vehicle", name)
     _check_permission(doc, "write")
-    doc.activate()
-
-    return {
-        "message": "Vehicle activated successfully.",
-        "data": doc.as_api_dict(),
-    }
-
-
-@frappe.whitelist(methods=["POST"])
-def deactivate_vehicle(name):
-    _require_auth()
-
-    doc = frappe.get_doc("Vehicle", name)
-    _check_permission(doc, "write")
-    doc.deactivate()
-
-    return {
-        "message": "Vehicle deactivated successfully.",
-        "data": doc.as_api_dict(),
-    }
+    doc.status = status
+    doc.save()
+    return {"message": "Vehicle status updated successfully.", "data": _as_api_dict(doc)}

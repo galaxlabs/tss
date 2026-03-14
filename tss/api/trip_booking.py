@@ -21,37 +21,31 @@ def _parse_payload(payload=None):
     return frappe.local.form_dict
 
 
+def _as_api_dict(doc):
+    return doc.as_api_dict() if hasattr(doc, "as_api_dict") else doc.as_dict()
+
+
 def _trip_booking_fields():
     return [
-        "status",
-        "booking_source",
-        "reference_no",
+        "booking_code",
         "base_company",
-        "booking_date",
-        "customer_name",
-        "customer_name_ar",
-        "mobile_no",
-        "email",
-        "nationality",
-        "number_of_passengers",
-        "trip_date",
-        "trip_time",
-        "trip_type",
+        "trip",
         "route",
-        "pickup_location",
-        "dropoff_location",
-        "pickup_city",
-        "dropoff_city",
-        "vehicle_type",
-        "vehicle",
-        "assigned_driver",
-        "currency",
-        "estimated_amount",
-        "final_amount",
-        "pricing_status",
-        "created_by_staff",
-        "special_instructions",
-        "remarks",
+        "booking_date",
+        "booking_datetime",
+        "passenger_name",
+        "passenger_name_ar",
+        "mobile_no",
+        "alternate_mobile",
+        "seat_count",
+        "fare_amount",
+        "payment_status",
+        "booking_status",
+        "source_channel",
+        "pickup_point",
+        "drop_point",
+        "pricing_rule",
+        "notes",
     ]
 
 
@@ -61,30 +55,30 @@ def list_trip_bookings(
     limit_page_length=20,
     search=None,
     base_company=None,
-    status=None,
-    booking_source=None,
-    trip_date=None,
+    trip=None,
     route=None,
-    vehicle_type=None,
-    created_by_staff=None,
+    booking_status=None,
+    payment_status=None,
+    source_channel=None,
+    booking_date=None,
 ):
     _require_auth()
 
     filters = {}
     if base_company:
         filters["base_company"] = base_company
-    if status:
-        filters["status"] = status
-    if booking_source:
-        filters["booking_source"] = booking_source
-    if trip_date:
-        filters["trip_date"] = trip_date
+    if trip:
+        filters["trip"] = trip
     if route:
         filters["route"] = route
-    if vehicle_type:
-        filters["vehicle_type"] = vehicle_type
-    if created_by_staff:
-        filters["created_by_staff"] = created_by_staff
+    if booking_status:
+        filters["booking_status"] = booking_status
+    if payment_status:
+        filters["payment_status"] = payment_status
+    if source_channel:
+        filters["source_channel"] = source_channel
+    if booking_date:
+        filters["booking_date"] = booking_date
 
     or_filters = None
     if search:
@@ -92,11 +86,9 @@ def list_trip_bookings(
             ["Trip Booking", "name", "like", f"%{search}%"],
             ["Trip Booking", "booking_code", "like", f"%{search}%"],
             ["Trip Booking", "booking_title", "like", f"%{search}%"],
-            ["Trip Booking", "customer_name", "like", f"%{search}%"],
+            ["Trip Booking", "passenger_name", "like", f"%{search}%"],
             ["Trip Booking", "mobile_no", "like", f"%{search}%"],
-            ["Trip Booking", "reference_no", "like", f"%{search}%"],
-            ["Trip Booking", "pickup_location", "like", f"%{search}%"],
-            ["Trip Booking", "dropoff_location", "like", f"%{search}%"],
+            ["Trip Booking", "trip", "like", f"%{search}%"],
         ]
 
     data = frappe.get_list(
@@ -108,21 +100,19 @@ def list_trip_bookings(
             "booking_code",
             "booking_title",
             "base_company",
-            "status",
-            "booking_source",
-            "customer_name",
-            "mobile_no",
-            "trip_date",
-            "route",
-            "vehicle_type",
-            "vehicle",
-            "assigned_driver",
-            "number_of_passengers",
-            "estimated_amount",
-            "final_amount",
             "trip",
+            "route",
+            "booking_date",
+            "passenger_name",
+            "mobile_no",
+            "seat_count",
+            "fare_amount",
+            "payment_status",
+            "booking_status",
+            "source_channel",
+            "pricing_rule",
         ],
-        order_by="modified desc",
+        order_by="booking_datetime desc, modified desc",
         limit_start=cint(limit_start),
         limit_page_length=cint(limit_page_length),
     )
@@ -136,7 +126,7 @@ def get_trip_booking(name):
 
     doc = frappe.get_doc("Trip Booking", name)
     _check_permission(doc, "read")
-    return {"data": doc.as_api_dict()}
+    return {"data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -144,11 +134,7 @@ def create_trip_booking(payload=None):
     _require_auth()
 
     data = _parse_payload(payload)
-    doc_data = {
-        "doctype": "Trip Booking",
-        "naming_series": data.get("naming_series") or "TBK-.YYYY.-.#####",
-        "booking_passenger": data.get("booking_passenger") or [],
-    }
+    doc_data = {"doctype": "Trip Booking", "booking_passenger": data.get("booking_passenger") or []}
 
     for fieldname in _trip_booking_fields():
         doc_data[fieldname] = data.get(fieldname)
@@ -156,10 +142,7 @@ def create_trip_booking(payload=None):
     doc = frappe.get_doc(doc_data)
     doc.insert()
 
-    return {
-        "message": "Trip Booking created successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Trip Booking created successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["PUT", "POST"])
@@ -180,11 +163,7 @@ def update_trip_booking(name, payload=None):
             doc.append("booking_passenger", row)
 
     doc.save()
-
-    return {
-        "message": "Trip Booking updated successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Trip Booking updated successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
@@ -193,39 +172,16 @@ def delete_trip_booking(name):
 
     doc = frappe.get_doc("Trip Booking", name)
     _check_permission(doc, "delete")
-
     frappe.delete_doc("Trip Booking", name)
-
     return {"message": "Trip Booking deleted successfully."}
 
 
 @frappe.whitelist(methods=["POST"])
-def confirm_trip_booking(name):
+def set_trip_booking_status(name, booking_status):
     _require_auth()
 
     doc = frappe.get_doc("Trip Booking", name)
     _check_permission(doc, "write")
-
-    result = doc.confirm_booking()
-
-    return {
-        "message": "Trip Booking confirmed successfully.",
-        "result": result,
-        "data": doc.as_api_dict(),
-    }
-
-
-@frappe.whitelist(methods=["POST"])
-def create_trip_from_booking(name):
-    _require_auth()
-
-    doc = frappe.get_doc("Trip Booking", name)
-    _check_permission(doc, "write")
-
-    trip = doc.create_trip()
-
-    return {
-        "message": "Trip created successfully.",
-        "trip": trip,
-        "data": doc.as_api_dict(),
-    }
+    doc.booking_status = booking_status
+    doc.save()
+    return {"message": "Trip Booking status updated successfully.", "data": _as_api_dict(doc)}

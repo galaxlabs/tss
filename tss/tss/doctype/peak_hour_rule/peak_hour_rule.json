@@ -4,9 +4,9 @@
  "creation": "2026-03-12 23:01:11.185912",
  "doctype": "DocType",
  "engine": "InnoDB",
- "title_field": "rule_title",
+ "title_field": "rule_name",
  "search_fields": "rule_code,rule_title,base_company",
-    "autoname": "field:rule_code",
+ "autoname": "naming_series:",
  "field_order": [
   "section_identity",
   "rule_code",
@@ -27,7 +27,10 @@
   "effective_to",
   "section_notes",
   "description",
-  "remarks"
+  "remarks",
+  "naming_series",
+  "rule_name",
+  "notes"
  ],
  "fields": [
   {
@@ -81,7 +84,6 @@
    "label": "Is Active",
    "default": "1"
   },
-
   {
    "fieldname": "section_time",
    "fieldtype": "Section Break",
@@ -130,7 +132,6 @@
    "fieldtype": "Date",
    "label": "Effective To"
   },
-
   {
    "fieldname": "section_notes",
    "fieldtype": "Section Break",
@@ -145,6 +146,25 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Naming Series",
+   "fieldtype": "Select",
+   "options": "PHR-.YYYY.-.#####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rule_name",
+   "label": "Rule Name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "label": "Notes",
+   "fieldtype": "Small Text"
   }
  ],
  "grid_page_length": 50,
@@ -173,5 +193,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

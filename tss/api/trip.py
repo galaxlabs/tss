@@ -3,6 +3,7 @@ from __future__ import annotations
 import frappe
 from frappe import _
 from frappe.utils import cint
+from tss.utils.pdf_engine import generate_pdf, save_pdf
 
 
 def _require_auth():
@@ -23,47 +24,22 @@ def _parse_payload(payload=None):
 
 def _trip_fields():
     return [
-        "trip_status",
-        "created_from_booking",
-        "trip_booking",
+        "trip_code",
         "base_company",
-        "customer",
-        "customer_name",
-        "mobile_no",
-        "number_of_passengers",
-        "per_passenger_value",
-        "currency",
         "trip_date",
-        "trip_time",
-        "departure",
-        "arrival",
-        "trip_type",
+        "trip_status",
         "route",
-        "from_location",
-        "to_location",
-        "vehicle_type",
-        "assigned_vehicle",
-        "assigned_driver",
-        "co_driver",
-        "kashf_sent",
-        "is_return_trip",
-        "travel_agency",
-        "is_referral",
-        "distance",
-        "distance_unit",
-        "duration_minutes",
-        "avg_speed_kmph",
-        "odometer_start",
-        "odometer_end",
-        "booking_amount",
-        "trip_value",
-        "driver_share",
-        "company_share",
-        "referral_commission_type",
-        "referral_commission_value",
-        "sales_invoice",
-        "special_instructions",
-        "remarks",
+        "departure_datetime",
+        "arrival_datetime",
+        "actual_departure_datetime",
+        "actual_arrival_datetime",
+        "vehicle",
+        "driver",
+        "conductor",
+        "pricing_rule",
+        "seat_capacity",
+        "available_seats",
+        "notes",
     ]
 
 
@@ -76,8 +52,8 @@ def list_trips(
     trip_status=None,
     trip_date=None,
     route=None,
-    assigned_vehicle=None,
-    assigned_driver=None,
+    vehicle=None,
+    driver=None,
 ):
     _require_auth()
 
@@ -90,10 +66,10 @@ def list_trips(
         filters["trip_date"] = trip_date
     if route:
         filters["route"] = route
-    if assigned_vehicle:
-        filters["assigned_vehicle"] = assigned_vehicle
-    if assigned_driver:
-        filters["assigned_driver"] = assigned_driver
+    if vehicle:
+        filters["vehicle"] = vehicle
+    if driver:
+        filters["driver"] = driver
 
     or_filters = None
     if search:
@@ -101,11 +77,9 @@ def list_trips(
             ["Trip", "name", "like", f"%{search}%"],
             ["Trip", "trip_code", "like", f"%{search}%"],
             ["Trip", "trip_title", "like", f"%{search}%"],
-            ["Trip", "customer_name", "like", f"%{search}%"],
-            ["Trip", "mobile_no", "like", f"%{search}%"],
             ["Trip", "route", "like", f"%{search}%"],
-            ["Trip", "trip_booking", "like", f"%{search}%"],
-            ["Trip", "assigned_vehicle", "like", f"%{search}%"],
+            ["Trip", "vehicle", "like", f"%{search}%"],
+            ["Trip", "driver", "like", f"%{search}%"],
         ]
 
     data = frappe.get_list(
@@ -116,19 +90,20 @@ def list_trips(
             "name",
             "trip_code",
             "trip_title",
-            "trip_status",
             "base_company",
-            "customer_name",
-            "mobile_no",
             "trip_date",
+            "trip_status",
             "route",
-            "assigned_vehicle",
-            "assigned_driver",
-            "number_of_passengers",
-            "trip_value",
+            "departure_datetime",
+            "arrival_datetime",
+            "vehicle",
+            "driver",
+            "seat_capacity",
+            "available_seats",
+            "pricing_rule",
             "qr_code",
         ],
-        order_by="modified desc",
+        order_by="departure_datetime desc, modified desc",
         limit_start=cint(limit_start),
         limit_page_length=cint(limit_page_length),
     )
@@ -150,22 +125,14 @@ def create_trip(payload=None):
     _require_auth()
 
     data = _parse_payload(payload)
-    doc_data = {
-        "doctype": "Trip",
-        "naming_series": data.get("naming_series") or "TRP-.YYYY.-.#####",
-        "passengers": data.get("passengers") or [],
-    }
+    doc_data = {"doctype": "Trip", "trip_staff": data.get("trip_staff") or []}
 
     for fieldname in _trip_fields():
         doc_data[fieldname] = data.get(fieldname)
 
     doc = frappe.get_doc(doc_data)
     doc.insert()
-
-    return {
-        "message": "Trip created successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Trip created successfully.", "data": doc.as_api_dict()}
 
 
 @frappe.whitelist(methods=["PUT", "POST"])
@@ -180,17 +147,13 @@ def update_trip(name, payload=None):
         if fieldname in data:
             doc.set(fieldname, data.get(fieldname))
 
-    if "passengers" in data:
-        doc.set("passengers", [])
-        for row in data.get("passengers") or []:
-            doc.append("passengers", row)
+    if "trip_staff" in data:
+        doc.set("trip_staff", [])
+        for row in data.get("trip_staff") or []:
+            doc.append("trip_staff", row)
 
     doc.save()
-
-    return {
-        "message": "Trip updated successfully.",
-        "data": doc.as_api_dict(),
-    }
+    return {"message": "Trip updated successfully.", "data": doc.as_api_dict()}
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
@@ -199,78 +162,41 @@ def delete_trip(name):
 
     doc = frappe.get_doc("Trip", name)
     _check_permission(doc, "delete")
-
     frappe.delete_doc("Trip", name)
-
     return {"message": "Trip deleted successfully."}
 
 
 @frappe.whitelist(methods=["POST"])
-def mark_trip_confirmed(name):
+def set_trip_status(name, trip_status):
     _require_auth()
+
     doc = frappe.get_doc("Trip", name)
     _check_permission(doc, "write")
-    doc.mark_confirmed()
-    return {"message": "Trip confirmed successfully.", "data": doc.as_api_dict()}
+    doc.trip_status = trip_status
+    doc.save()
+    return {"message": "Trip status updated successfully.", "data": doc.as_api_dict()}
 
 
 @frappe.whitelist(methods=["POST"])
-def mark_trip_departed(name):
+def generate_trip_pdf(name, public=1):
     _require_auth()
+
     doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    doc.mark_departed()
-    return {"message": "Trip departed successfully.", "data": doc.as_api_dict()}
+    _check_permission(doc, "read")
 
-
-@frappe.whitelist(methods=["POST"])
-def mark_trip_arrived(name):
-    _require_auth()
-    doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    doc.mark_arrived()
-    return {"message": "Trip arrived successfully.", "data": doc.as_api_dict()}
-
-
-@frappe.whitelist(methods=["POST"])
-def mark_trip_completed(name):
-    _require_auth()
-    doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    doc.mark_completed()
-    return {"message": "Trip completed successfully.", "data": doc.as_api_dict()}
-
-
-@frappe.whitelist(methods=["POST"])
-def mark_trip_cancelled(name):
-    _require_auth()
-    doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    doc.mark_cancelled()
-    return {"message": "Trip cancelled successfully.", "data": doc.as_api_dict()}
-
-
-@frappe.whitelist(methods=["POST"])
-def generate_trip_qr(name):
-    _require_auth()
-    doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    qr_code = doc.generate_qr_code()
+    pdf_bytes = generate_pdf("Trip", doc.name, print_format="Trip Manifest")
+    file_url, file_name, file_id = save_pdf(
+        pdf_bytes,
+        "Trip",
+        doc.name,
+        folder="Home/Trip PDFs",
+        public=cint(public),
+    )
     return {
-        "message": "Trip QR generated successfully.",
-        "qr_code": qr_code,
-        "data": doc.as_api_dict(),
-    }
-
-
-@frappe.whitelist(methods=["POST"])
-def pull_trip_passengers_from_booking(name):
-    _require_auth()
-    doc = frappe.get_doc("Trip", name)
-    _check_permission(doc, "write")
-    count = doc.pull_passengers_from_booking()
-    return {
-        "message": "Passengers pulled successfully.",
-        "count": count,
-        "data": doc.as_api_dict(),
+        "message": "Trip PDF generated successfully.",
+        "data": {
+            "file_url": file_url,
+            "file_name": file_name,
+            "file_id": file_id,
+        },
     }

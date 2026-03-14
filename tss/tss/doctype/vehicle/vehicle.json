@@ -1,322 +1,90 @@
 {
- "actions": [],
  "allow_rename": 1,
- "autoname": "naming_series:",
- "creation": "2026-03-12 21:36:02.781656",
+ "autoname": "field:vehicle_code",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
+  "identity_section",
   "vehicle_code",
-  "section_identity",
-  "display_title",
-  "vehicle_type",
-  "vehicle_make",
-  "vehicle_model",
-  "model_year",
-  "column_break_identity_1",
-  "license_plate",
-  "plate_number",
-  "registration_no",
-  "chassis_no",
-  "engine_no",
-  "section_company",
+  "plate_no",
+  "column_break_identity",
+  "plate_no_ar",
   "base_company",
-  "assigned_driver",
-  "ownership_type",
-  "column_break_company_1",
-  "status",
-  "is_active",
-  "section_specs",
-  "passenger_capacity",
-  "luggage_capacity",
-  "luggage_capacity_unit",
-  "fuel_type",
-  "transmission_type",
-  "column_break_specs_1",
+  "classification_section",
+  "vehicle_model",
+  "vehicle_category",
+  "column_break_classification",
+  "vehicle_make",
+  "vehicle_type",
+  "model_year",
+  "specification_section",
+  "chassis_no",
+  "column_break_specification",
+  "engine_no",
   "color",
-  "odometer_reading",
-  "odometer_unit",
-  "seat_configuration",
-  "section_dates",
-  "purchase_date",
-  "service_start_date",
-  "insurance_expiry_date",
-  "registration_expiry_date",
-  "section_media",
-  "vehicle_image",
-  "remarks",
+  "seat_capacity",
+  "fuel_type",
+  "operations_section",
+  "status",
+  "assigned_driver",
+  "default_route",
+  "column_break_operations",
+  "ownership_type",
+  "odometer",
+  "is_active",
+  "display_title",
+  "notes_section",
+  "notes",
   "documents"
  ],
  "fields": [
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Naming Series",
-   "options": "VEH-.YYYY.-.#####",
-   "reqd": 1
-  },
-  {
-   "fieldname": "vehicle_code",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Vehicle Code",
-   "read_only": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "section_identity",
-   "fieldtype": "Section Break",
-   "label": "Identity"
-  },
-  {
-   "fieldname": "display_title",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Display Title",
-   "read_only": 1
-  },
-  {
-   "fieldname": "vehicle_type",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Vehicle Type",
-   "options": "Vehicle Type",
-   "reqd": 1
-  },
-  {
-   "fieldname": "vehicle_make",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Vehicle Make",
-   "options": "Vehicle Make",
-   "reqd": 1
-  },
-  {
-   "fieldname": "vehicle_model",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Vehicle Model",
-   "options": "Vehicle Model",
-   "reqd": 1
-  },
-  {
-   "fieldname": "model_year",
-   "fieldtype": "Int",
-   "label": "Model Year"
-  },
-  {
-   "fieldname": "column_break_identity_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "license_plate",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "License Plate",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "plate_number",
-   "fieldtype": "Data",
-   "label": "Plate Number"
-  },
-  {
-   "fieldname": "registration_no",
-   "fieldtype": "Data",
-   "label": "Registration Number"
-  },
-  {
-   "fieldname": "chassis_no",
-   "fieldtype": "Data",
-   "label": "Chassis Number",
-   "unique": 1
-  },
-  {
-   "fieldname": "engine_no",
-   "fieldtype": "Data",
-   "label": "Engine Number",
-   "unique": 1
-  },
-  {
-   "fieldname": "section_company",
-   "fieldtype": "Section Break",
-   "label": "Ownership and Assignment"
-  },
-  {
-   "fieldname": "base_company",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Base Company",
-   "options": "Base Company",
-   "reqd": 1
-  },
-  {
-   "fieldname": "assigned_driver",
-   "fieldtype": "Link",
-   "label": "Assigned Driver",
-   "options": "Staff"
-  },
-  {
-   "default": "Owned",
-   "fieldname": "ownership_type",
-   "fieldtype": "Select",
-   "label": "Ownership Type",
-   "options": "\nOwned\nLeased\nRented\nThird Party"
-  },
-  {
-   "fieldname": "column_break_company_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Draft",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "\nDraft\nActive\nInactive\nUnder Maintenance\nOut of Service\nSold"
-  },
-  {
-   "default": "1",
-   "fieldname": "is_active",
-   "fieldtype": "Check",
-   "label": "Is Active"
-  },
-  {
-   "fieldname": "section_specs",
-   "fieldtype": "Section Break",
-   "label": "Operational Specifications"
-  },
-  {
-   "fieldname": "passenger_capacity",
-   "fieldtype": "Int",
-   "label": "Passenger Capacity"
-  },
-  {
-   "fieldname": "luggage_capacity",
-   "fieldtype": "Float",
-   "label": "Luggage Capacity"
-  },
-  {
-   "fieldname": "luggage_capacity_unit",
-   "fieldtype": "Select",
-   "label": "Luggage Capacity Unit",
-   "options": "\nBags\nkg\nTon\nm3"
-  },
-  {
-   "fieldname": "fuel_type",
-   "fieldtype": "Select",
-   "label": "Fuel Type",
-   "options": "\nPetrol\nDiesel\nHybrid\nElectric\nOther"
-  },
-  {
-   "fieldname": "transmission_type",
-   "fieldtype": "Select",
-   "label": "Transmission Type",
-   "options": "\nAutomatic\nManual\nOther"
-  },
-  {
-   "fieldname": "column_break_specs_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "color",
-   "fieldtype": "Data",
-   "label": "Color"
-  },
-  {
-   "fieldname": "odometer_reading",
-   "fieldtype": "Float",
-   "label": "Odometer Reading"
-  },
-  {
-   "default": "KM",
-   "fieldname": "odometer_unit",
-   "fieldtype": "Select",
-   "label": "Odometer Unit",
-   "options": "\nKM\nMiles"
-  },
-  {
-   "fieldname": "seat_configuration",
-   "fieldtype": "Data",
-   "label": "Seat Configuration"
-  },
-  {
-   "fieldname": "section_dates",
-   "fieldtype": "Section Break",
-   "label": "Lifecycle Dates"
-  },
-  {
-   "fieldname": "purchase_date",
-   "fieldtype": "Date",
-   "label": "Purchase Date"
-  },
-  {
-   "fieldname": "service_start_date",
-   "fieldtype": "Date",
-   "label": "Service Start Date"
-  },
-  {
-   "fieldname": "insurance_expiry_date",
-   "fieldtype": "Date",
-   "label": "Insurance Expiry Date"
-  },
-  {
-   "fieldname": "registration_expiry_date",
-   "fieldtype": "Date",
-   "label": "Registration Expiry Date"
-  },
-  {
-   "fieldname": "section_media",
-   "fieldtype": "Section Break",
-   "label": "Media and Documents"
-  },
-  {
-   "fieldname": "vehicle_image",
-   "fieldtype": "Attach Image",
-   "label": "Vehicle Image"
-  },
-  {
-   "fieldname": "remarks",
-   "fieldtype": "Small Text",
-   "label": "Remarks"
-  },
-  {
-   "fieldname": "documents",
-   "fieldtype": "Table",
-   "label": "Documents",
-   "options": "Entity Document"
-  }
+  {"fieldname": "identity_section", "fieldtype": "Section Break", "label": "Identity"},
+  {"fieldname": "vehicle_code", "fieldtype": "Data", "label": "Vehicle Code", "read_only": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "plate_no", "fieldtype": "Data", "label": "Plate No", "reqd": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "column_break_identity", "fieldtype": "Column Break"},
+  {"fieldname": "plate_no_ar", "fieldtype": "Data", "label": "Plate No Arabic"},
+  {"fieldname": "base_company", "fieldtype": "Link", "label": "Base Company", "options": "Base Company", "reqd": 1, "in_standard_filter": 1, "in_list_view": 1},
+  {"fieldname": "classification_section", "fieldtype": "Section Break", "label": "Classification"},
+  {"fieldname": "vehicle_model", "fieldtype": "Link", "label": "Vehicle Model", "options": "Vehicle Model", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "vehicle_category", "fieldtype": "Link", "label": "Vehicle Category", "options": "Vehicle Category", "read_only": 1},
+  {"fieldname": "column_break_classification", "fieldtype": "Column Break"},
+  {"fieldname": "vehicle_make", "fieldtype": "Link", "label": "Vehicle Make", "options": "Vehicle Make", "read_only": 1},
+  {"fieldname": "vehicle_type", "fieldtype": "Link", "label": "Vehicle Type", "options": "Vehicle Type", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "model_year", "fieldtype": "Int", "label": "Model Year"},
+  {"fieldname": "specification_section", "fieldtype": "Section Break", "label": "Specification"},
+  {"fieldname": "chassis_no", "fieldtype": "Data", "label": "Chassis No", "unique": 1},
+  {"fieldname": "column_break_specification", "fieldtype": "Column Break"},
+  {"fieldname": "engine_no", "fieldtype": "Data", "label": "Engine No", "unique": 1},
+  {"fieldname": "color", "fieldtype": "Data", "label": "Color"},
+  {"fieldname": "seat_capacity", "fieldtype": "Int", "label": "Seating Capacity"},
+  {"fieldname": "fuel_type", "fieldtype": "Select", "label": "Fuel Type", "options": "Petrol\nDiesel\nHybrid\nElectric\nOther"},
+  {"fieldname": "operations_section", "fieldtype": "Section Break", "label": "Operations"},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nActive\nInactive\nMaintenance\nSuspended\nSold", "default": "Draft", "in_list_view": 1},
+  {"fieldname": "assigned_driver", "fieldtype": "Link", "label": "Assigned Driver", "options": "Staff"},
+  {"fieldname": "default_route", "fieldtype": "Link", "label": "Default Route", "options": "Route"},
+  {"fieldname": "column_break_operations", "fieldtype": "Column Break"},
+  {"fieldname": "ownership_type", "fieldtype": "Select", "label": "Ownership Type", "options": "Owned\nLeased\nRented\nThird Party"},
+  {"fieldname": "odometer", "fieldtype": "Float", "label": "Odometer"},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Is Active", "read_only": 1},
+  {"fieldname": "display_title", "fieldtype": "Data", "label": "Display Title", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "notes_section", "fieldtype": "Section Break", "label": "Notes & Documents"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"},
+  {"fieldname": "documents", "fieldtype": "Table", "label": "Documents", "options": "Entity Document"}
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-13 00:36:44.987228",
- "modified_by": "Administrator",
  "module": "TSS",
  "name": "Vehicle",
- "naming_rule": "By \"Naming Series\" field",
- "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
+  {"role": "System Manager", "create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "share": 1, "write": 1}
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
- "search_fields": "vehicle_code,license_plate,plate_number,vehicle_make,vehicle_model,vehicle_type,chassis_no,engine_no",
+ "search_fields": "vehicle_code,plate_no,chassis_no,engine_no,display_title",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "display_title"
+ "title_field": "display_title",
+ "track_changes": 1
 }

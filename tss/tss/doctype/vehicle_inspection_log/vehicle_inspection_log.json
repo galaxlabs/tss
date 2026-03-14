@@ -1,277 +1,53 @@
 {
- "actions": [],
  "allow_rename": 1,
- "creation": "2026-03-12 23:54:26.071208",
+ "autoname": "field:inspection_log_no",
  "doctype": "DocType",
  "engine": "InnoDB",
- "autoname": "naming_series:",
- "title_field": "vehicle",
- "track_changes": 1,
  "field_order": [
-  "section_header",
-  "naming_series",
   "inspection_log_no",
-  "revision_no",
-  "column_break_header_1",
   "base_company",
-  "inspection_date",
-  "is_latest_revision",
-  "section_vehicle_driver",
-  "driver",
-  "driver_name_text",
   "vehicle",
   "vehicle_type",
-  "column_break_vehicle_driver_1",
-  "supervisor",
-  "supervisor_name_text",
+  "inspection_date",
+  "inspection_time",
+  "inspector",
   "trip",
-  "odometer_reading",
-  "section_status",
+  "inspection_type",
+  "status",
   "overall_result",
-  "print_ready",
-  "auto_fill_checklist",
-  "column_break_status_1",
-  "previous_revision",
-  "revision_reason",
-  "overall_notes",
-  "section_items",
-  "items",
-  "section_signatures",
-  "declaration",
-  "column_break_signatures_1",
-  "driver_signature",
-  "supervisor_signature"
+  "odometer_reading",
+  "notes",
+  "items"
  ],
  "fields": [
-  {
-   "fieldname": "section_header",
-   "fieldtype": "Section Break",
-   "label": "Daily Vehicle Inspection Log"
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Naming Series",
-   "options": "VIL-.YYYY.-.#####",
-   "default": "VIL-.YYYY.-.#####",
-   "reqd": 1
-  },
-  {
-   "fieldname": "inspection_log_no",
-   "fieldtype": "Data",
-   "label": "Inspection Log No",
-   "read_only": 1,
-   "unique": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "revision_no",
-   "fieldtype": "Int",
-   "label": "Revision No",
-   "default": "1",
-   "read_only": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "column_break_header_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "base_company",
-   "fieldtype": "Link",
-   "label": "Base Company",
-   "options": "Base Company",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "inspection_date",
-   "fieldtype": "Date",
-   "label": "Inspection Date",
-   "default": "Today",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "is_latest_revision",
-   "fieldtype": "Check",
-   "label": "Is Latest Revision",
-   "default": "1",
-   "read_only": 1
-  },
-
-  {
-   "fieldname": "section_vehicle_driver",
-   "fieldtype": "Section Break",
-   "label": "Vehicle And Driver"
-  },
-  {
-   "fieldname": "driver",
-   "fieldtype": "Link",
-   "label": "Driver",
-   "options": "Staff",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "driver_name_text",
-   "fieldtype": "Data",
-   "label": "Driver Name (Text)"
-  },
-  {
-   "fieldname": "vehicle",
-   "fieldtype": "Link",
-   "label": "Vehicle",
-   "options": "Vehicle",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "vehicle_type",
-   "fieldtype": "Link",
-   "label": "Vehicle Type",
-   "options": "Vehicle Type"
-  },
-  {
-   "fieldname": "column_break_vehicle_driver_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "supervisor",
-   "fieldtype": "Link",
-   "label": "Supervisor",
-   "options": "Staff"
-  },
-  {
-   "fieldname": "supervisor_name_text",
-   "fieldtype": "Data",
-   "label": "Supervisor Name (Text)"
-  },
-  {
-   "fieldname": "trip",
-   "fieldtype": "Link",
-   "label": "Trip",
-   "options": "Trip"
-  },
-  {
-   "fieldname": "odometer_reading",
-   "fieldtype": "Float",
-   "label": "Odometer Reading"
-  },
-
-  {
-   "fieldname": "section_status",
-   "fieldtype": "Section Break",
-   "label": "Status"
-  },
-  {
-   "fieldname": "overall_result",
-   "fieldtype": "Select",
-   "label": "Overall Result",
-   "options": "\nFit\nNeeds Attention\nNot Fit",
-   "default": "Fit",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
-   "fieldname": "print_ready",
-   "fieldtype": "Check",
-   "label": "Print Ready",
-   "default": "1",
-   "read_only": 1
-  },
-  {
-   "fieldname": "auto_fill_checklist",
-   "fieldtype": "Check",
-   "label": "Auto Fill Checklist",
-   "default": "1"
-  },
-  {
-   "fieldname": "column_break_status_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "previous_revision",
-   "fieldtype": "Link",
-   "label": "Previous Revision",
-   "options": "Vehicle Inspection Log",
-   "read_only": 1
-  },
-  {
-   "fieldname": "revision_reason",
-   "fieldtype": "Small Text",
-   "label": "Revision Reason"
-  },
-  {
-   "fieldname": "overall_notes",
-   "fieldtype": "Small Text",
-   "label": "Overall Notes"
-  },
-
-  {
-   "fieldname": "section_items",
-   "fieldtype": "Section Break",
-   "label": "Checklist Items"
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "Vehicle Inspection Log Item",
-   "reqd": 1
-  },
-
-  {
-   "fieldname": "section_signatures",
-   "fieldtype": "Section Break",
-   "label": "Signatures"
-  },
-  {
-   "fieldname": "declaration",
-   "fieldtype": "Small Text",
-   "label": "Declaration",
-   "default": "I confirm the above inspection is correct."
-  },
-  {
-   "fieldname": "column_break_signatures_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "driver_signature",
-   "fieldtype": "Signature",
-   "label": "Driver Signature"
-  },
-  {
-   "fieldname": "supervisor_signature",
-   "fieldtype": "Signature",
-   "label": "Supervisor Signature"
-  }
+  {"fieldname": "inspection_log_no", "fieldtype": "Data", "label": "Inspection No", "read_only": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "base_company", "fieldtype": "Link", "label": "Base Company", "options": "Base Company", "reqd": 1, "in_standard_filter": 1, "in_list_view": 1},
+  {"fieldname": "vehicle", "fieldtype": "Link", "label": "Vehicle", "options": "Vehicle", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "vehicle_type", "fieldtype": "Link", "label": "Vehicle Type", "options": "Vehicle Type"},
+  {"fieldname": "inspection_date", "fieldtype": "Date", "label": "Inspection Date", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "inspection_time", "fieldtype": "Time", "label": "Inspection Time"},
+  {"fieldname": "inspector", "fieldtype": "Link", "label": "Inspector", "options": "Staff"},
+  {"fieldname": "trip", "fieldtype": "Link", "label": "Trip", "options": "Trip"},
+  {"fieldname": "inspection_type", "fieldtype": "Select", "label": "Inspection Type", "options": "Pre-Trip\nPost-Trip\nDaily\nPeriodic\nOther", "default": "Pre-Trip"},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nOpen\nCompleted\nCancelled", "default": "Draft", "in_list_view": 1},
+  {"fieldname": "overall_result", "fieldtype": "Select", "label": "Overall Result", "options": "Passed\nAttention Required\nFailed", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "odometer_reading", "fieldtype": "Float", "label": "Odometer Reading"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"},
+  {"fieldname": "items", "fieldtype": "Table", "label": "Inspection Items", "options": "Vehicle Inspection Log Item", "reqd": 1}
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 23:54:26.071208",
- "modified_by": "Administrator",
  "module": "TSS",
  "name": "Vehicle Inspection Log",
- "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
+  {"role": "System Manager", "create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "share": 1, "write": 1}
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "inspection_log_no",
+ "track_changes": 1
 }

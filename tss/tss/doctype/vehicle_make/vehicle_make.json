@@ -1,148 +1,40 @@
 {
- "actions": [],
  "allow_rename": 1,
- "creation": "2026-03-12 21:26:32.218689",
+ "autoname": "field:make_name",
  "doctype": "DocType",
  "engine": "InnoDB",
-"track_changes": 1,
-  "title_field": "make_name",
-  "search_fields": "make_name,make_name_ar,make_code,country_of_origin",
-  "fields": [
-    {
-      "fieldname": "section_identity",
-      "fieldtype": "Section Break",
-      "label": "Identity"
-    },
-    {
-      "fieldname": "make_name",
-      "fieldtype": "Data",
-      "label": "Vehicle Make Name",
-      "reqd": 1,
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "make_name_ar",
-      "fieldtype": "Data",
-      "label": "Vehicle Make Name (Arabic)"
-    },
-    {
-      "fieldname": "make_code",
-      "fieldtype": "Data",
-      "label": "Vehicle Make Code",
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_identity_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "\nDraft\nActive\nInactive",
-      "default": "Draft",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "is_active",
-      "fieldtype": "Check",
-      "label": "Is Active",
-      "default": "1"
-    },
-    {
-      "fieldname": "sort_order",
-      "fieldtype": "Int",
-      "label": "Sort Order"
-    },
-
-    {
-      "fieldname": "section_branding",
-      "fieldtype": "Section Break",
-      "label": "Branding"
-    },
-    {
-      "fieldname": "country_of_origin",
-      "fieldtype": "Data",
-      "label": "Country of Origin"
-    },
-    {
-      "fieldname": "website",
-      "fieldtype": "Data",
-      "label": "Website"
-    },
-    {
-      "fieldname": "logo",
-      "fieldtype": "Attach Image",
-      "label": "Logo"
-    },
-    {
-      "fieldname": "column_break_branding_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "show_on_website",
-      "fieldtype": "Check",
-      "label": "Show on Website"
-    },
-    {
-      "fieldname": "website_label",
-      "fieldtype": "Data",
-      "label": "Website Label"
-    },
-    {
-      "fieldname": "website_label_ar",
-      "fieldtype": "Data",
-      "label": "Website Label (Arabic)"
-    },
-
-    {
-      "fieldname": "section_description",
-      "fieldtype": "Section Break",
-      "label": "Description"
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Small Text",
-      "label": "Description"
-    },
-    {
-      "fieldname": "description_ar",
-      "fieldtype": "Small Text",
-      "label": "Description (Arabic)"
-    },
-    {
-      "fieldname": "remarks",
-      "fieldtype": "Small Text",
-      "label": "Remarks"
-    }
-  ],
+ "field_order": [
+  "make_name",
+  "make_name_ar",
+  "make_code",
+  "country_of_origin",
+  "status",
+  "is_active",
+  "notes"
+ ],
+ "fields": [
+  {"fieldname": "make_name", "fieldtype": "Data", "label": "Vehicle Make Name", "reqd": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "make_name_ar", "fieldtype": "Data", "label": "Vehicle Make Name Arabic"},
+  {"fieldname": "make_code", "fieldtype": "Data", "label": "Vehicle Make Code", "unique": 1, "in_list_view": 1},
+  {"fieldname": "country_of_origin", "fieldtype": "Data", "label": "Country of Origin"},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nActive\nInactive", "default": "Active", "in_list_view": 1},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Is Active", "read_only": 1},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 21:26:32.218689",
- "modified_by": "Administrator",
  "module": "TSS",
  "name": "Vehicle Make",
- "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
+  {"role": "System Manager", "create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "share": 1, "write": 1}
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "make_name,make_name_ar,make_code,country_of_origin",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "make_name",
+ "track_changes": 1
 }

@@ -21,31 +21,41 @@ def _parse_payload(payload=None):
     return frappe.local.form_dict
 
 
+def _as_api_dict(doc):
+    return doc.as_api_dict() if hasattr(doc, "as_api_dict") else doc.as_dict()
+
+
 def _fields():
     return [
-        "naming_series",
+        "inspection_log_no",
         "base_company",
-        "inspection_date",
-        "driver",
-        "driver_name_text",
         "vehicle",
         "vehicle_type",
-        "supervisor",
-        "supervisor_name_text",
+        "inspection_date",
+        "inspection_time",
+        "inspector",
         "trip",
+        "inspection_type",
+        "status",
+        "overall_result",
         "odometer_reading",
-        "previous_revision",
-        "revision_reason",
-        "overall_notes",
-        "declaration",
-        "driver_signature",
-        "supervisor_signature",
-        "auto_fill_checklist",
+        "notes",
     ]
 
 
 @frappe.whitelist(methods=["GET"])
-def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=None, base_company=None, vehicle=None, driver=None, inspection_date=None, is_latest_revision=None):
+def list_vehicle_inspection_logs(
+    limit_start=0,
+    limit_page_length=20,
+    search=None,
+    base_company=None,
+    vehicle=None,
+    inspector=None,
+    trip=None,
+    inspection_date=None,
+    inspection_type=None,
+    status=None,
+):
     _require_auth()
 
     filters = {}
@@ -53,12 +63,16 @@ def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=Non
         filters["base_company"] = base_company
     if vehicle:
         filters["vehicle"] = vehicle
-    if driver:
-        filters["driver"] = driver
+    if inspector:
+        filters["inspector"] = inspector
+    if trip:
+        filters["trip"] = trip
     if inspection_date:
         filters["inspection_date"] = inspection_date
-    if is_latest_revision not in (None, ""):
-        filters["is_latest_revision"] = cint(is_latest_revision)
+    if inspection_type:
+        filters["inspection_type"] = inspection_type
+    if status:
+        filters["status"] = status
 
     or_filters = None
     if search:
@@ -66,7 +80,7 @@ def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=Non
             ["Vehicle Inspection Log", "name", "like", f"%{search}%"],
             ["Vehicle Inspection Log", "inspection_log_no", "like", f"%{search}%"],
             ["Vehicle Inspection Log", "vehicle", "like", f"%{search}%"],
-            ["Vehicle Inspection Log", "driver", "like", f"%{search}%"],
+            ["Vehicle Inspection Log", "inspector", "like", f"%{search}%"],
         ]
 
     data = frappe.get_list(
@@ -76,15 +90,19 @@ def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=Non
         fields=[
             "name",
             "inspection_log_no",
-            "revision_no",
             "base_company",
-            "inspection_date",
             "vehicle",
-            "driver",
+            "vehicle_type",
+            "inspection_date",
+            "inspection_time",
+            "inspector",
+            "trip",
+            "inspection_type",
+            "status",
             "overall_result",
-            "is_latest_revision",
+            "odometer_reading",
         ],
-        order_by="inspection_date desc, revision_no desc",
+        order_by="inspection_date desc, modified desc",
         limit_start=cint(limit_start),
         limit_page_length=cint(limit_page_length),
     )
@@ -94,32 +112,31 @@ def list_vehicle_inspection_logs(limit_start=0, limit_page_length=20, search=Non
 @frappe.whitelist(methods=["GET"])
 def get_vehicle_inspection_log(name):
     _require_auth()
+
     doc = frappe.get_doc("Vehicle Inspection Log", name)
     _check_permission(doc, "read")
-    return {"data": doc.as_api_dict()}
+    return {"data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["POST"])
 def create_vehicle_inspection_log(payload=None):
     _require_auth()
-    data = _parse_payload(payload)
 
-    doc_data = {
-        "doctype": "Vehicle Inspection Log",
-        "items": data.get("items") or [],
-    }
+    data = _parse_payload(payload)
+    doc_data = {"doctype": "Vehicle Inspection Log", "items": data.get("items") or []}
 
     for fieldname in _fields():
         doc_data[fieldname] = data.get(fieldname)
 
     doc = frappe.get_doc(doc_data)
     doc.insert()
-    return {"message": "Vehicle Inspection Log created successfully.", "data": doc.as_api_dict()}
+    return {"message": "Vehicle Inspection Log created successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["PUT", "POST"])
 def update_vehicle_inspection_log(name, payload=None):
     _require_auth()
+
     data = _parse_payload(payload)
     doc = frappe.get_doc("Vehicle Inspection Log", name)
     _check_permission(doc, "write")
@@ -134,33 +151,13 @@ def update_vehicle_inspection_log(name, payload=None):
             doc.append("items", row)
 
     doc.save()
-    return {"message": "Vehicle Inspection Log updated successfully.", "data": doc.as_api_dict()}
-
-
-@frappe.whitelist(methods=["POST"])
-def create_vehicle_inspection_log_revision(source_name, payload=None):
-    _require_auth()
-    source = frappe.get_doc("Vehicle Inspection Log", source_name)
-    _check_permission(source, "read")
-
-    data = _parse_payload(payload)
-    new_doc = source.make_revision()
-
-    if data.get("revision_reason"):
-        new_doc.revision_reason = data.get("revision_reason")
-
-    if data.get("items"):
-        new_doc.set("items", [])
-        for row in data.get("items"):
-            new_doc.append("items", row)
-
-    new_doc.insert()
-    return {"message": "Vehicle Inspection Log revision created successfully.", "data": new_doc.as_api_dict()}
+    return {"message": "Vehicle Inspection Log updated successfully.", "data": _as_api_dict(doc)}
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
 def delete_vehicle_inspection_log(name):
     _require_auth()
+
     doc = frappe.get_doc("Vehicle Inspection Log", name)
     _check_permission(doc, "delete")
     frappe.delete_doc("Vehicle Inspection Log", name)

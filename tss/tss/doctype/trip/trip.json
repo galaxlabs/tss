@@ -1,397 +1,285 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-03-12 22:06:47.693741",
+ "autoname": "field:trip_code",
+ "creation": "2026-03-14 20:02:03.428428",
  "doctype": "DocType",
  "engine": "InnoDB",
- "title_field": "trip_title",
-  "search_fields": "trip_code,trip_title,customer_name,mobile_no,route,pickup_location,dropoff_location",
+ "field_order": [
+  "kashf_sent",
+  "trip_code",
+  "driver",
+  "trip_title",
+  "route",
+  "route_label",
+  "passenger_count",
+  "arrival_datetime",
+  "co_driver",
+  "vehicle",
+  "base_company",
+  "from_location",
+  "distance_km_snapshot",
+  "actual_arrival_datetime",
+  "seat_capacity",
+  "column_break_legr",
+  "is_return_trip",
+  "actual_departure_datetime",
+  "trip_date",
+  "trip_status",
+  "hijri_date",
+  "pricing_rule",
+  "trip_booking",
+  "customer_name",
+  "mobile_no",
+  "departure_datetime",
+  "to_location",
+  "duration_minutes_snapshot",
+  "conductor",
+  "available_seats",
+  "qr_code",
+  "section_break_ysfm",
+  "passengers",
+  "trip_staff",
+  "qr_payload",
+  "notes"
+ ],
  "fields": [
-    {
-      "fieldname": "naming_series",
-      "fieldtype": "Select",
-      "label": "Naming Series",
-      "options": "TRP-.YYYY.-.#####",
-      "reqd": 1
-    },
-    {
-      "fieldname": "trip_code",
-      "fieldtype": "Data",
-      "label": "Trip Code",
-      "read_only": 1,
-      "unique": 1,
-      "in_list_view": 1
-    },
-
-    {
-      "fieldname": "section_identity",
-      "fieldtype": "Section Break",
-      "label": "Identity"
-    },
-    {
-      "fieldname": "trip_title",
-      "fieldtype": "Data",
-      "label": "Trip Title",
-      "read_only": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "trip_status",
-      "fieldtype": "Select",
-      "label": "Trip Status",
-      "options": "\nScheduled\nConfirmed\nDeparted\nArrived\nCompleted\nCancelled",
-      "default": "Scheduled",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "created_from_booking",
-      "fieldtype": "Check",
-      "label": "Created From Booking"
-    },
-    {
-      "fieldname": "trip_booking",
-      "fieldtype": "Link",
-      "label": "Trip Booking",
-      "options": "Trip Booking",
-      "read_only": 1
-    },
-    {
-      "fieldname": "column_break_identity_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "base_company",
-      "fieldtype": "Link",
-      "label": "Base Company",
-      "options": "Base Company",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "uuid",
-      "fieldtype": "Data",
-      "label": "UUID",
-      "read_only": 1,
-      "unique": 1
-    },
-    {
-      "fieldname": "hijri_date",
-      "fieldtype": "Data",
-      "label": "Hijri Date",
-      "read_only": 1
-    },
-
-    {
-      "fieldname": "section_customer",
-      "fieldtype": "Section Break",
-      "label": "Customer"
-    },
-    {
-      "fieldname": "customer",
-      "fieldtype": "Link",
-      "label": "Customer",
-      "options": "Customer",
-      "read_only": 1
-    },
-    {
-      "fieldname": "customer_name",
-      "fieldtype": "Data",
-      "label": "Customer Name",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "mobile_no",
-      "fieldtype": "Data",
-      "label": "Mobile No",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_customer_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "number_of_passengers",
-      "fieldtype": "Int",
-      "label": "Passenger Count",
-      "default": "1"
-    },
-    {
-      "fieldname": "per_passenger_value",
-      "fieldtype": "Currency",
-      "label": "Per Passenger Value"
-    },
-    {
-      "fieldname": "currency",
-      "fieldtype": "Link",
-      "label": "Currency",
-      "options": "Currency"
-    },
-
-    {
-      "fieldname": "section_route_plan",
-      "fieldtype": "Section Break",
-      "label": "Route Plan"
-    },
-    {
-      "fieldname": "trip_date",
-      "fieldtype": "Date",
-      "label": "Trip Date",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "trip_time",
-      "fieldtype": "Time",
-      "label": "Trip Time"
-    },
-    {
-      "fieldname": "departure",
-      "fieldtype": "Datetime",
-      "label": "Departure"
-    },
-    {
-      "fieldname": "arrival",
-      "fieldtype": "Datetime",
-      "label": "Arrival"
-    },
-    {
-      "fieldname": "column_break_route_plan_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "trip_type",
-      "fieldtype": "Select",
-      "label": "Trip Type",
-      "options": "\nOne Way\nReturn\nHourly\nDaily\nCustom Route",
-      "default": "One Way"
-    },
-    {
-      "fieldname": "route",
-      "fieldtype": "Link",
-      "label": "Route",
-      "options": "Route",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "from_location",
-      "fieldtype": "Small Text",
-      "label": "From"
-    },
-    {
-      "fieldname": "to_location",
-      "fieldtype": "Small Text",
-      "label": "To"
-    },
-
-    {
-      "fieldname": "section_assignment",
-      "fieldtype": "Section Break",
-      "label": "Assignment"
-    },
-    {
-      "fieldname": "vehicle_type",
-      "fieldtype": "Link",
-      "label": "Vehicle Type",
-      "options": "Vehicle Type"
-    },
-    {
-      "fieldname": "assigned_vehicle",
-      "fieldtype": "Link",
-      "label": "Assigned Vehicle",
-      "options": "Vehicle"
-    },
-    {
-      "fieldname": "assigned_driver",
-      "fieldtype": "Link",
-      "label": "Assigned Driver",
-      "options": "Staff"
-    },
-    {
-      "fieldname": "co_driver",
-      "fieldtype": "Link",
-      "label": "Co Driver",
-      "options": "Staff"
-    },
-    {
-      "fieldname": "column_break_assignment_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "kashf_sent",
-      "fieldtype": "Check",
-      "label": "Kashf Sent"
-    },
-    {
-      "fieldname": "is_return_trip",
-      "fieldtype": "Check",
-      "label": "Is Return Trip"
-    },
-    {
-      "fieldname": "travel_agency",
-      "fieldtype": "Data",
-      "label": "Travel Agency"
-    },
-    {
-      "fieldname": "is_referral",
-      "fieldtype": "Check",
-      "label": "Is Referral"
-    },
-
-    {
-      "fieldname": "section_trip_metrics",
-      "fieldtype": "Section Break",
-      "label": "Trip Metrics"
-    },
-    {
-      "fieldname": "distance",
-      "fieldtype": "Float",
-      "label": "Distance"
-    },
-    {
-      "fieldname": "distance_unit",
-      "fieldtype": "Select",
-      "label": "Distance Unit",
-      "options": "\nKM\nMiles",
-      "default": "KM"
-    },
-    {
-      "fieldname": "duration_minutes",
-      "fieldtype": "Int",
-      "label": "Duration Minutes"
-    },
-    {
-      "fieldname": "duration_text",
-      "fieldtype": "Data",
-      "label": "Duration"
-    },
-    {
-      "fieldname": "column_break_trip_metrics_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "avg_speed_kmph",
-      "fieldtype": "Float",
-      "label": "Avg Speed (KM/H)"
-    },
-    {
-      "fieldname": "odometer_start",
-      "fieldtype": "Float",
-      "label": "Odometer Start"
-    },
-    {
-      "fieldname": "odometer_end",
-      "fieldtype": "Float",
-      "label": "Odometer End"
-    },
-
-    {
-      "fieldname": "section_financials",
-      "fieldtype": "Section Break",
-      "label": "Financials"
-    },
-    {
-      "fieldname": "booking_amount",
-      "fieldtype": "Currency",
-      "label": "Booking Amount"
-    },
-    {
-      "fieldname": "trip_value",
-      "fieldtype": "Currency",
-      "label": "Trip Value"
-    },
-    {
-      "fieldname": "driver_share",
-      "fieldtype": "Currency",
-      "label": "Driver Share"
-    },
-    {
-      "fieldname": "company_share",
-      "fieldtype": "Currency",
-      "label": "Company Share"
-    },
-    {
-      "fieldname": "column_break_financials_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "referral_commission_type",
-      "fieldtype": "Select",
-      "label": "Referral Commission Type",
-      "options": "\nPercentage\nFixed"
-    },
-    {
-      "fieldname": "referral_commission_value",
-      "fieldtype": "Float",
-      "label": "Referral Commission Value"
-    },
-    {
-      "fieldname": "sales_invoice",
-      "fieldtype": "Data",
-      "label": "Sales Invoice Reference",
-      "read_only": 1
-    },
-
-    {
-      "fieldname": "section_qr",
-      "fieldtype": "Section Break",
-      "label": "QR and Tracking"
-    },
-    {
-      "fieldname": "qr_token",
-      "fieldtype": "Data",
-      "label": "QR Token",
-      "read_only": 1,
-      "unique": 1
-    },
-    {
-      "fieldname": "qr_payload",
-      "fieldtype": "Long Text",
-      "label": "QR Payload",
-      "read_only": 1
-    },
-    {
-      "fieldname": "qr_code",
-      "fieldtype": "Attach Image",
-      "label": "QR Code",
-      "read_only": 1
-    },
-
-    {
-      "fieldname": "section_passengers",
-      "fieldtype": "Section Break",
-      "label": "Passengers"
-    },
-    {
-      "fieldname": "passengers",
-      "fieldtype": "Table",
-      "label": "Passengers",
-      "options": "Passengers"
-    },
-
-    {
-      "fieldname": "section_notes",
-      "fieldtype": "Section Break",
-      "label": "Notes"
-    },
-    {
-      "fieldname": "special_instructions",
-      "fieldtype": "Small Text",
-      "label": "Special Instructions"
-    },
-    {
-      "fieldname": "remarks",
-      "fieldtype": "Small Text",
-      "label": "Remarks"
-    }
-  ],
+  {
+   "fieldname": "trip_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Trip Code",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "trip_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Trip Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "route_label",
+   "fieldtype": "Data",
+   "label": "Route Label",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "driver.base_company",
+   "fieldname": "base_company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Base Company",
+   "options": "Base Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "trip_booking",
+   "fieldtype": "Link",
+   "label": "Trip Booking",
+   "options": "Trip Booking"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer / Passenger",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "passenger_count",
+   "fieldtype": "Int",
+   "label": "Passenger Count",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return_trip",
+   "fieldtype": "Check",
+   "label": "Is Return Trip"
+  },
+  {
+   "default": "0",
+   "fieldname": "kashf_sent",
+   "fieldtype": "Check",
+   "label": "Kashf Sent"
+  },
+  {
+   "default": "Today",
+   "fieldname": "trip_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Trip Date",
+   "reqd": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "trip_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Trip Status",
+   "options": "Draft\nScheduled\nOpen\nIn Progress\nCompleted\nCancelled\nClosed"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Route",
+   "options": "Route",
+   "reqd": 1
+  },
+  {
+   "fieldname": "departure_datetime",
+   "fieldtype": "Datetime",
+   "label": "Departure Datetime",
+   "reqd": 1
+  },
+  {
+   "fieldname": "arrival_datetime",
+   "fieldtype": "Datetime",
+   "label": "Planned Arrival Datetime"
+  },
+  {
+   "fieldname": "actual_departure_datetime",
+   "fieldtype": "Datetime",
+   "label": "Actual Departure Datetime"
+  },
+  {
+   "fieldname": "actual_arrival_datetime",
+   "fieldtype": "Datetime",
+   "label": "Actual Arrival Datetime"
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vehicle",
+   "options": "Vehicle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Driver",
+   "options": "Staff",
+   "reqd": 1
+  },
+  {
+   "fieldname": "co_driver",
+   "fieldtype": "Link",
+   "label": "Co Driver",
+   "options": "Staff"
+  },
+  {
+   "fieldname": "conductor",
+   "fieldtype": "Link",
+   "label": "Conductor / Assistant",
+   "options": "Staff"
+  },
+  {
+   "fieldname": "pricing_rule",
+   "fieldtype": "Link",
+   "label": "Pricing Rule",
+   "options": "Trip Pricing Rule"
+  },
+  {
+   "fieldname": "seat_capacity",
+   "fieldtype": "Int",
+   "label": "Seat Capacity"
+  },
+  {
+   "fieldname": "available_seats",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Available Seats",
+   "read_only": 1
+  },
+  {
+   "fieldname": "from_location",
+   "fieldtype": "Data",
+   "label": "From",
+   "read_only": 1
+  },
+  {
+   "fieldname": "to_location",
+   "fieldtype": "Data",
+   "label": "To",
+   "read_only": 1
+  },
+  {
+   "fieldname": "distance_km_snapshot",
+   "fieldtype": "Float",
+   "label": "Distance KM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "duration_minutes_snapshot",
+   "fieldtype": "Int",
+   "label": "Duration Minutes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hijri_date",
+   "fieldtype": "Data",
+   "label": "Hijri Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qr_payload",
+   "fieldtype": "Long Text",
+   "label": "QR Payload",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qr_code",
+   "fieldtype": "Attach Image",
+   "label": "QR Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "passengers",
+   "fieldtype": "Table",
+   "label": "Passengers",
+   "options": "Passengers"
+  },
+  {
+   "fieldname": "trip_staff",
+   "fieldtype": "Table",
+   "label": "Trip Staff",
+   "options": "Trip Staff Assignment"
+  },
+  {
+   "fieldname": "column_break_legr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ysfm",
+   "fieldtype": "Section Break"
+  }
+ ],
  "grid_page_length": 50,
+ "image_field": "qr_code",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 22:06:47.693741",
+ "modified": "2026-03-14 21:49:28.247244",
  "modified_by": "Administrator",
  "module": "TSS",
  "name": "Trip",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -409,7 +297,11 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "trip_code,trip_title,trip_date,route_label,customer_name,mobile_no,route,vehicle,driver,trip_booking,from_location,to_location",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "trip_title",
+ "track_changes": 1
 }
