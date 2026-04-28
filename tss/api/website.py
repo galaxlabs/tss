@@ -31,6 +31,24 @@ def _get_default_base_company() -> str:
     frappe.throw(_("No Base Company is configured for website booking."))
 
 
+def _get_google_maps_api_key() -> str | None:
+    api_key = clean_text(frappe.conf.get("google_maps_api_key"))
+    if api_key:
+        return api_key
+
+    for settings_doctype, fieldname in (("Google Map Settings", "api_key"), ("Google Settings", "api_key")):
+        if not frappe.db.exists("DocType", settings_doctype):
+            continue
+        try:
+            api_key = clean_text(frappe.db.get_single_value(settings_doctype, fieldname))
+        except Exception:
+            api_key = None
+        if api_key:
+            return api_key
+
+    return None
+
+
 def _get_active_pricing(route: str, base_company: str) -> dict[str, Any] | None:
     if not route:
         return None
@@ -45,12 +63,23 @@ def _get_active_pricing(route: str, base_company: str) -> dict[str, Any] | None:
             "is_active": 1,
             "effective_from": ["<=", today],
         },
-        fields=["name", "amount", "currency", "effective_to"],
+        fields=["name", "amount", "currency", "effective_to", "vehicle_type"],
         order_by="effective_from desc, modified desc",
     )
+    default_vehicle_type = frappe.db.get_value("Route", route, "default_vehicle_type") if route else None
+    preferred_rows = []
+    other_rows = []
     for row in rows:
-        if not row.get("effective_to") or getdate(row.get("effective_to")) >= today:
-            return row
+        if row.get("effective_to") and getdate(row.get("effective_to")) < today:
+            continue
+        if default_vehicle_type and row.get("vehicle_type") == default_vehicle_type:
+            preferred_rows.append(row)
+        else:
+            other_rows.append(row)
+    if preferred_rows:
+        return preferred_rows[0]
+    if other_rows:
+        return other_rows[0]
     return None
 
 
@@ -76,11 +105,101 @@ def _get_public_route_rows(base_company: str) -> list[dict[str, Any]]:
         row["price"] = flt((pricing or {}).get("amount"))
         row["currency"] = (pricing or {}).get("currency") or "SAR"
         row["pricing_rule"] = (pricing or {}).get("name")
+        row["vehicle_type"] = (pricing or {}).get("vehicle_type")
+        row["vehicle_type_ar"] = None
+        row["vehicle_category"] = None
+        row["vehicle_image"] = None
+        row["vehicle_make"] = None
+        row["vehicle_model"] = None
+        if row.get("vehicle_type") and frappe.db.exists("Vehicle Type", row["vehicle_type"]):
+            type_doc = frappe.get_cached_doc("Vehicle Type", row["vehicle_type"])
+            row["vehicle_type_ar"] = type_doc.type_name_ar
+            row["vehicle_category"] = type_doc.category
+            row["vehicle_image"] = type_doc.image
+
+            model_name = frappe.db.get_value(
+                "Vehicle Model",
+                {"vehicle_type": type_doc.name, "status": "Active"},
+                "name",
+                order_by="modified desc",
+            )
+            if model_name and frappe.db.exists("Vehicle Model", model_name):
+                model_doc = frappe.get_cached_doc("Vehicle Model", model_name)
+                row["vehicle_model"] = model_doc.model_name
+                row["vehicle_image"] = row["vehicle_image"] or model_doc.image
+                row["vehicle_make"] = model_doc.vehicle_make
+
+                if model_doc.vehicle_make and frappe.db.exists("Vehicle Make", model_doc.vehicle_make):
+                    make_doc = frappe.get_cached_doc("Vehicle Make", model_doc.vehicle_make)
+                    row["vehicle_make"] = make_doc.make_name
+                    row["vehicle_image"] = row["vehicle_image"] or make_doc.image
         row["label"] = row.route_title or " | ".join(
             part for part in [row.route_code, f"{row.source} -> {row.destination}"] if part
         )
 
     return routes
+
+
+def _get_public_fleet_rows(base_company: str) -> list[dict[str, Any]]:
+    today = getdate()
+    rules = frappe.get_all(
+        "Trip Pricing Rule",
+        filters={
+            "base_company": base_company,
+            "status": "Active",
+            "is_active": 1,
+            "effective_from": ["<=", today],
+        },
+        fields=["vehicle_type", "currency", "amount", "effective_to"],
+        order_by="amount asc, modified desc",
+    )
+
+    fleet: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for row in rules:
+        vehicle_type = clean_text(row.get("vehicle_type"))
+        if not vehicle_type or vehicle_type in seen:
+            continue
+        if row.get("effective_to") and getdate(row.get("effective_to")) < today:
+            continue
+        if not frappe.db.exists("Vehicle Type", vehicle_type):
+            continue
+
+        type_doc = frappe.get_cached_doc("Vehicle Type", vehicle_type)
+        fleet.append(
+            {
+                "name": type_doc.name,
+                "vehicle_type": type_doc.type_name,
+                "vehicle_type_ar": type_doc.type_name_ar,
+                "category": type_doc.category,
+                "seating_capacity": cint(type_doc.default_seating_capacity),
+                "starting_price": flt(row.get("amount")),
+                "currency": row.get("currency") or "SAR",
+                "description": clean_long_text(type_doc.notes)
+                or _("Comfortable transport option for route booking and direct transfers."),
+                "image": type_doc.image,
+                "vehicle_make": None,
+                "vehicle_model": None,
+            }
+        )
+        seen.add(vehicle_type)
+
+        model_name = frappe.db.get_value(
+            "Vehicle Model",
+            {"vehicle_type": type_doc.name, "status": "Active"},
+            "name",
+            order_by="modified desc",
+        )
+        if model_name and frappe.db.exists("Vehicle Model", model_name):
+            model_doc = frappe.get_cached_doc("Vehicle Model", model_name)
+            fleet[-1]["vehicle_model"] = model_doc.model_name
+            fleet[-1]["image"] = fleet[-1]["image"] or model_doc.image
+            if model_doc.vehicle_make and frappe.db.exists("Vehicle Make", model_doc.vehicle_make):
+                make_doc = frappe.get_cached_doc("Vehicle Make", model_doc.vehicle_make)
+                fleet[-1]["vehicle_make"] = make_doc.make_name
+                fleet[-1]["image"] = fleet[-1]["image"] or make_doc.image
+
+    return fleet
 
 
 def _resolve_route(base_company: str, route=None, source=None, destination=None) -> str | None:
@@ -157,7 +276,16 @@ def _ensure_customer(full_name: str, email: str | None, mobile_no: str | None) -
     if not frappe.db.exists("DocType", "Customer"):
         return None
 
-    customer_name = frappe.db.get_value("Customer", {"customer_name": full_name}, "name")
+    customer_filters = None
+    customer_meta = frappe.get_meta("Customer")
+    if email and customer_meta.has_field("email_id"):
+        customer_filters = {"email_id": email}
+    elif mobile_no and customer_meta.has_field("mobile_no"):
+        customer_filters = {"mobile_no": mobile_no}
+    elif full_name:
+        customer_filters = {"customer_name": full_name}
+
+    customer_name = frappe.db.get_value("Customer", customer_filters or {}, "name")
     if customer_name and frappe.db.exists("Customer", customer_name):
         customer = frappe.get_doc("Customer", customer_name)
     else:
@@ -172,7 +300,6 @@ def _ensure_customer(full_name: str, email: str | None, mobile_no: str | None) -
         )
         customer.insert(ignore_permissions=True)
 
-    customer_meta = frappe.get_meta("Customer")
     if email and customer_meta.has_field("email_id"):
         customer.email_id = email
     if mobile_no and customer_meta.has_field("mobile_no"):
@@ -201,6 +328,24 @@ def _ensure_customer(full_name: str, email: str | None, mobile_no: str | None) -
     return customer.name
 
 
+def _get_request_user_profile(data: dict[str, Any]) -> dict[str, str]:
+    profile = {
+        "full_name": clean_text(data.get("passenger_name") or data.get("full_name")),
+        "email": clean_text(cstr(data.get("email")).lower()),
+        "mobile_no": clean_text(data.get("mobile_no") or data.get("phone")),
+    }
+
+    current_user = getattr(getattr(frappe.local, "session", None), "user", None)
+    if not current_user or current_user == "Guest" or not frappe.db.exists("User", current_user):
+        return profile
+
+    user = frappe.get_cached_doc("User", current_user)
+    profile["full_name"] = profile["full_name"] or clean_text(user.full_name or user.first_name)
+    profile["email"] = profile["email"] or clean_text(cstr(user.email).lower())
+    profile["mobile_no"] = profile["mobile_no"] or clean_text(user.mobile_no)
+    return profile
+
+
 @frappe.whitelist(allow_guest=True)
 def get_public_booking_context(base_company=None):
     base_company = base_company or _get_default_base_company()
@@ -210,6 +355,16 @@ def get_public_booking_context(base_company=None):
         "base_company": base_company,
         "routes": routes,
         "locations": [location for location in locations if location],
+        "fleet": _get_public_fleet_rows(base_company),
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+def get_public_maps_config():
+    return {
+        "enabled": bool(_get_google_maps_api_key()),
+        "api_key": _get_google_maps_api_key(),
+        "country": "sa",
     }
 
 
@@ -228,8 +383,10 @@ def create_public_trip_booking(payload=None):
 
     pricing = _get_active_pricing(route, base_company)
     booking_passenger = _build_booking_passengers(data)
-    passenger_name = clean_text(data.get("passenger_name") or data.get("full_name"))
-    mobile_no = clean_text(data.get("mobile_no") or data.get("phone"))
+    profile = _get_request_user_profile(data)
+    passenger_name = profile["full_name"]
+    mobile_no = profile["mobile_no"]
+    customer = _ensure_customer(profile["full_name"], profile["email"], profile["mobile_no"]) if profile["full_name"] else None
     fare_amount = flt(data.get("fare_amount") or (pricing or {}).get("amount") or 1)
     seat_count = cint(data.get("seat_count") or data.get("passengers_count") or len(booking_passenger) or 1)
 
@@ -260,6 +417,7 @@ def create_public_trip_booking(payload=None):
         "booking_code": doc.booking_code,
         "route": route,
         "fare_amount": doc.fare_amount,
+        "customer": customer,
     }
 
 

@@ -167,6 +167,7 @@ doc_events = {
 # -------
 
 before_tests = "tss.setup.install.after_migrate"
+boot_session = "tss.override_frappe_get_pdf"
 
 # Overriding Methods
 # ------------------------------
@@ -253,4 +254,4 @@ fixtures = [
 	{"dt": "Print Format", "filters": [["module", "=", "TSS"]]},
 ]
 
-after_migrate = "tss.setup.install.after_migrate"
+after_migrate = ["tss.setup.install.after_migrate", "tss.override_frappe_get_pdf"]
