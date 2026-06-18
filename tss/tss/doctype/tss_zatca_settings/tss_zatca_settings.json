@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-05-20 13:06:35.239019",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enable_zatca",
+  "zatca_environment",
+  "column_break_1",
+  "phase",
+  "section_break_csid",
+  "compliance_csid",
+  "compliance_secret",
+  "production_csid",
+  "column_break_csid",
+  "production_secret",
+  "csid_expiry",
+  "section_break_cert",
+  "certificate_file",
+  "private_key_file",
+  "column_break_cert",
+  "production_cert",
+  "production_key",
+  "section_break_config",
+  "invoice_serial",
+  "qr_base_url",
+  "column_break_config",
+  "auto_submit",
+  "zatca_vat_rate",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "enable_zatca",
+   "fieldtype": "Check",
+   "label": "Enable ZATCA Integration"
+  },
+  {
+   "default": "Sandbox",
+   "fieldname": "zatca_environment",
+   "fieldtype": "Select",
+   "label": "Environment",
+   "options": "Sandbox\nSimulation\nProduction"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Phase 2",
+   "fieldname": "phase",
+   "fieldtype": "Select",
+   "label": "Phase",
+   "options": "Phase 1\nPhase 2"
+  },
+  {
+   "fieldname": "section_break_csid",
+   "fieldtype": "Section Break",
+   "label": "CSID Configuration"
+  },
+  {
+   "fieldname": "compliance_csid",
+   "fieldtype": "Data",
+   "label": "Compliance CSID"
+  },
+  {
+   "fieldname": "compliance_secret",
+   "fieldtype": "Password",
+   "label": "Compliance Secret"
+  },
+  {
+   "fieldname": "production_csid",
+   "fieldtype": "Data",
+   "label": "Production CSID"
+  },
+  {
+   "fieldname": "column_break_csid",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "production_secret",
+   "fieldtype": "Password",
+   "label": "Production Secret"
+  },
+  {
+   "fieldname": "csid_expiry",
+   "fieldtype": "Date",
+   "label": "CSID Expiry"
+  },
+  {
+   "fieldname": "section_break_cert",
+   "fieldtype": "Section Break",
+   "label": "Certificate"
+  },
+  {
+   "fieldname": "certificate_file",
+   "fieldtype": "Attach",
+   "label": "Compliance Certificate"
+  },
+  {
+   "fieldname": "private_key_file",
+   "fieldtype": "Attach",
+   "label": "Private Key"
+  },
+  {
+   "fieldname": "column_break_cert",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "production_cert",
+   "fieldtype": "Attach",
+   "label": "Production Certificate"
+  },
+  {
+   "fieldname": "production_key",
+   "fieldtype": "Attach",
+   "label": "Production Key"
+  },
+  {
+   "fieldname": "section_break_config",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "INV-",
+   "fieldname": "invoice_serial",
+   "fieldtype": "Data",
+   "label": "Invoice Serial Prefix"
+  },
+  {
+   "fieldname": "qr_base_url",
+   "fieldtype": "Data",
+   "label": "QR Base URL"
+  },
+  {
+   "fieldname": "column_break_config",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_submit",
+   "fieldtype": "Check",
+   "label": "Auto-submit to ZATCA"
+  },
+  {
+   "default": "15",
+   "fieldname": "zatca_vat_rate",
+   "fieldtype": "Float",
+   "label": "Default VAT Rate %"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-20 13:06:35.239019",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "TSS ZATCA Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

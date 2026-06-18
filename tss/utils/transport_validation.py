@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import re
 
 import frappe
 from frappe import _
@@ -25,7 +26,15 @@ def normalize_identifier(value: str | None) -> str:
 
 
 def normalize_plate(value: str | None) -> str:
-    return normalize_code(value)
+    value = (value or "").strip().upper()
+    value = re.sub(r"[^A-Z0-9]+", " ", value)
+    value = re.sub(r"\s+", " ", value).strip()
+
+    if " " not in value:
+        value = re.sub(r"^([0-9]+)([A-Z]+)$", r"\1 \2", value)
+        value = re.sub(r"^([A-Z]+)([0-9]+)$", r"\1 \2", value)
+
+    return value
 
 
 def ensure_positive(value, label: str, allow_zero: bool = False):

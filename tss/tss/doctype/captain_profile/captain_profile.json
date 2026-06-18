@@ -1,0 +1,235 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "CAP-.YYYY.-.#####",
+ "creation": "2026-05-20 13:06:33.840628",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "full_name",
+  "name_ar",
+  "column_break_1",
+  "status",
+  "email",
+  "mobile_no",
+  "section_break_company",
+  "base_company",
+  "company_logo",
+  "column_break_comp",
+  "company_cr",
+  "vat_reg_no",
+  "section_break_docs",
+  "national_id",
+  "national_id_expiry",
+  "id_document",
+  "column_break_docs",
+  "driving_license_no",
+  "driving_license_expiry",
+  "driving_license_doc",
+  "section_break_bank",
+  "bank_name",
+  "iban_no",
+  "column_break_bank",
+  "account_no",
+  "bank_document",
+  "section_break_extras",
+  "passport_no",
+  "passport_doc",
+  "photo",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "name_ar",
+   "fieldtype": "Data",
+   "label": "Full Name (Arabic)"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Active\nInactive\nSuspended"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_company",
+   "fieldtype": "Section Break",
+   "label": "Company Information"
+  },
+  {
+   "fieldname": "base_company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Base Company",
+   "options": "Base Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company_logo",
+   "fieldtype": "Attach Image",
+   "label": "Company Logo"
+  },
+  {
+   "fieldname": "column_break_comp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company_cr",
+   "fieldtype": "Data",
+   "label": "Commercial Registration"
+  },
+  {
+   "fieldname": "vat_reg_no",
+   "fieldtype": "Data",
+   "label": "VAT Registration No"
+  },
+  {
+   "fieldname": "section_break_docs",
+   "fieldtype": "Section Break",
+   "label": "Personal Documents"
+  },
+  {
+   "fieldname": "national_id",
+   "fieldtype": "Data",
+   "label": "National ID / Iqama No"
+  },
+  {
+   "fieldname": "national_id_expiry",
+   "fieldtype": "Date",
+   "label": "National ID Expiry"
+  },
+  {
+   "fieldname": "id_document",
+   "fieldtype": "Attach",
+   "label": "ID Document"
+  },
+  {
+   "fieldname": "column_break_docs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "driving_license_no",
+   "fieldtype": "Data",
+   "label": "Driving License No"
+  },
+  {
+   "fieldname": "driving_license_expiry",
+   "fieldtype": "Date",
+   "label": "Driving License Expiry"
+  },
+  {
+   "fieldname": "driving_license_doc",
+   "fieldtype": "Attach",
+   "label": "Driving License Document"
+  },
+  {
+   "fieldname": "section_break_bank",
+   "fieldtype": "Section Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "iban_no",
+   "fieldtype": "Data",
+   "label": "IBAN"
+  },
+  {
+   "fieldname": "column_break_bank",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account_no",
+   "fieldtype": "Data",
+   "label": "Account No"
+  },
+  {
+   "fieldname": "bank_document",
+   "fieldtype": "Attach",
+   "label": "Bank Document"
+  },
+  {
+   "fieldname": "section_break_extras",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "passport_no",
+   "fieldtype": "Data",
+   "label": "Passport No"
+  },
+  {
+   "fieldname": "passport_doc",
+   "fieldtype": "Attach",
+   "label": "Passport Copy"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Profile Photo"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-20 13:06:33.840628",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "Captain Profile",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name",
+ "track_changes": 1
+}

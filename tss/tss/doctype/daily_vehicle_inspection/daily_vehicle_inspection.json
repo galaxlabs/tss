@@ -1,0 +1,206 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "INS-.YYYY.-.#####",
+ "creation": "2026-05-20 13:06:35.012680",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "vehicle",
+  "inspector",
+  "column_break_1",
+  "inspection_date",
+  "status",
+  "section_break_checklist",
+  "tires_ok",
+  "lights_ok",
+  "brakes_ok",
+  "column_break_cl",
+  "oil_level",
+  "coolant_level",
+  "windshield_ok",
+  "section_break_interior",
+  "ac_working",
+  "seats_clean",
+  "seatbelts_ok",
+  "column_break_int",
+  "first_aid_kit",
+  "fire_extinguisher",
+  "spare_tire",
+  "odometer_reading",
+  "photos",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vehicle",
+   "options": "Vehicle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "inspector",
+   "fieldtype": "Link",
+   "label": "Captain",
+   "options": "Captain Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "inspection_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nPassed\nFailed\nUnder Repair"
+  },
+  {
+   "fieldname": "section_break_checklist",
+   "fieldtype": "Section Break",
+   "label": "Checklist"
+  },
+  {
+   "default": "0",
+   "fieldname": "tires_ok",
+   "fieldtype": "Check",
+   "label": "Tires - Pressure & Condition"
+  },
+  {
+   "default": "0",
+   "fieldname": "lights_ok",
+   "fieldtype": "Check",
+   "label": "Lights - Headlights, Taillights, Signals"
+  },
+  {
+   "default": "0",
+   "fieldname": "brakes_ok",
+   "fieldtype": "Check",
+   "label": "Brakes - Working Properly"
+  },
+  {
+   "fieldname": "column_break_cl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oil_level",
+   "fieldtype": "Select",
+   "label": "Oil Level",
+   "options": "OK\nLow\nCritical"
+  },
+  {
+   "fieldname": "coolant_level",
+   "fieldtype": "Select",
+   "label": "Coolant Level",
+   "options": "OK\nLow\nCritical"
+  },
+  {
+   "default": "0",
+   "fieldname": "windshield_ok",
+   "fieldtype": "Check",
+   "label": "Windshield - No Cracks"
+  },
+  {
+   "fieldname": "section_break_interior",
+   "fieldtype": "Section Break",
+   "label": "Interior"
+  },
+  {
+   "default": "0",
+   "fieldname": "ac_working",
+   "fieldtype": "Check",
+   "label": "A/C Working"
+  },
+  {
+   "default": "0",
+   "fieldname": "seats_clean",
+   "fieldtype": "Check",
+   "label": "Seats Clean"
+  },
+  {
+   "default": "0",
+   "fieldname": "seatbelts_ok",
+   "fieldtype": "Check",
+   "label": "Seatbelts OK"
+  },
+  {
+   "fieldname": "column_break_int",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "first_aid_kit",
+   "fieldtype": "Check",
+   "label": "First Aid Kit Present"
+  },
+  {
+   "default": "0",
+   "fieldname": "fire_extinguisher",
+   "fieldtype": "Check",
+   "label": "Fire Extinguisher Present"
+  },
+  {
+   "default": "0",
+   "fieldname": "spare_tire",
+   "fieldtype": "Check",
+   "label": "Spare Tire Available"
+  },
+  {
+   "fieldname": "odometer_reading",
+   "fieldtype": "Int",
+   "label": "Odometer Reading (km)"
+  },
+  {
+   "fieldname": "photos",
+   "fieldtype": "Attach",
+   "label": "Inspection Photos"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes / Issues Found"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-20 13:06:35.012680",
+ "modified_by": "Administrator",
+ "module": "TSS",
+ "name": "Daily Vehicle Inspection",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

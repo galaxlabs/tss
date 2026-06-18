@@ -1,21 +1,42 @@
 frappe.ui.form.on("Route", {
 	refresh(frm) {
 		load_google_places(frm);
+		sync_route_title(frm);
 		if (!frm.is_new()) {
 			frm.add_custom_button(__("Fetch Distance"), () => fetch_distance(frm), __("Actions"));
 		}
+	},
+	route_name(frm) {
+		sync_route_title(frm);
+	},
+	route_code(frm) {
+		sync_route_title(frm);
 	},
 	source(frm) {
 		if (!frm.doc.route_name && frm.doc.source && frm.doc.destination) {
 			frm.set_value("route_name", `${frm.doc.source} - ${frm.doc.destination}`);
 		}
+		sync_route_title(frm);
 	},
 	destination(frm) {
 		if (!frm.doc.route_name && frm.doc.source && frm.doc.destination) {
 			frm.set_value("route_name", `${frm.doc.source} - ${frm.doc.destination}`);
 		}
+		sync_route_title(frm);
 	}
 });
+
+function sync_route_title(frm) {
+	const routeName = (frm.doc.route_name || "").trim();
+	const routeCode = (frm.doc.route_code || "").trim();
+	const fallbackName = [frm.doc.source, frm.doc.destination].filter(Boolean).join(" - ");
+	const titleName = routeName || fallbackName;
+	const routeTitle = [routeCode, titleName].filter(Boolean).join(" | ");
+
+	if (frm.doc.route_title !== routeTitle) {
+		frm.set_value("route_title", routeTitle);
+	}
+}
 
 function fetch_distance(frm) {
 	frappe.call({

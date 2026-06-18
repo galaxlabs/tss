@@ -11,6 +11,19 @@ dependencies = [
     # "frappe~=15.0.0" # Installed and managed by bench.
     "hijri-converter>=2.3.2.post1",
     "PyQRCode>=1.2.1",
+    # ZATCA E-Invoicing & Signing
+    "asn1>=2.7.0",
+    "cryptography>=44.0.1",
+    "qrcode>=7.4.2",
+    "lxml>=5.3.0",
+    "pikepdf>=8.0.0",
+    "python-bidi>=0.6.0",
+    "arabic-reshaper>=3.0.0",
+    "pymupdf>=1.25.0",
+    "Pillow>=10.3.0",
+    "numpy>=2.0.0",
+    # PDF / Print
+    "reportlab>=4.2.0",
 ]
 
 [build-system]

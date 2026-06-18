@@ -54,8 +54,8 @@ class Route(Document):
         title_parts = []
         if self.route_code:
             title_parts.append(self.route_code)
-        if readable_name:
-            title_parts.append(readable_name)
+        if self.route_name:
+            title_parts.append(self.route_name)
         self.route_title = " | ".join(title_parts) if title_parts else self.route_name
 
     def _build_route_code(self) -> str:

@@ -137,6 +137,11 @@ after_install = "tss.setup.install.after_install"
 # Hook on document methods and events
 
 doc_events = {
+	"Staff": {
+		"before_validate": "tss.utils.staff_setup.apply_transport_staff_defaults",
+		"after_insert": "tss.utils.staff_setup.ensure_transport_staff_links",
+		"on_update": "tss.utils.staff_setup.ensure_transport_staff_links",
+	},
 	"Trip": {
 		"on_update": "tss.utils.pdf_hooks.create_trip_pdf",
 	}

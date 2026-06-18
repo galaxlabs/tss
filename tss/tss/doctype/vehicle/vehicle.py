@@ -11,6 +11,7 @@ from tss.utils.transport_validation import (
     ensure_company_is_active,
     ensure_same_company,
     ensure_staff_is_driver,
+    normalize_identifier,
     normalize_plate,
     sync_verification_fields,
     validate_child_row_uniqueness,
